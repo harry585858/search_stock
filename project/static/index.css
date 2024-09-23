@@ -1,0 +1,18 @@
+#header{
+    width: 100%;
+}
+#section{
+    width: 79%;
+    height: 1000px;
+    float: left;
+    border: solid black 1px;
+}
+#sidebar{
+    width: 20%;
+    height: 1000px;
+    float: right;
+    border: solid black 1px;
+}
+#header > h1{
+    text-align: center;
+}
