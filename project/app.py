@@ -8,10 +8,11 @@ def index():
 
 @app.route('/search',methods=['POST'])
 def search():
-    nameOfStock = 'none'
-    nameOfStock = request.form['nameOfStock']
+    nameOfStock = {'','','',''}
+    nameOfStock = request.form.getlist('nameOfStock[]')
+    num = 0
     return render_template('search.html',nameOfStock=nameOfStock)
+
     
 if __name__=='__main__':
-    app.debug=True
-    app.run()
+    app.run(debug=True)

@@ -4,8 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        @import "/static/search.css";
+    </style>
 </head>
 <body>
-    <h1>{{nameOfStock}}</h1>
+    {% for i in range(4) %}
+        {%if nameOfStock[i] != '':%}
+        <div class="searchsection">
+            <p>{{nameOfStock[i]}}</p>
+        </div>
+        {%endif%}
+        {% if i == 0:%}
+        <div id="sidebar">
+            <form action="/search" method="POST">
+                <input type="text" name="nameOfStock[]" placeholder="주식 이름 입력">
+                <input type="text" name="nameOfStock[]" placeholder="주식 이름 입력">
+                <input type="text" name="nameOfStock[]" placeholder="주식 이름 입력">
+                <input type="text" name="nameOfStock[]" placeholder="주식 이름 입력">
+                <input type="submit" value="검색">
+            </form>
+        </div>
+        {%endif%}
+    {% endfor %}
 </body>
 </html>

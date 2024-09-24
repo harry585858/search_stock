@@ -13,11 +13,14 @@
         <h1>주식예측</h1>
     </div>
     <div id = "section">
-        <p>아무거나</p>
+        <p>여러 주식의 정보 </p>
     </div>
     <div id = "sidebar">
         <form action="/search" method="POST">
-            <input type="text" name="nameOfStock" placeholder="주식 이름 입력">
+            <input type="text" name="nameOfStock[]" placeholder="주식 이름 입력">
+            <input type="text" name="nameOfStock[]" placeholder="주식 이름 입력">
+            <input type="text" name="nameOfStock[]" placeholder="주식 이름 입력">
+            <input type="text" name="nameOfStock[]" placeholder="주식 이름 입력">
             <input type="submit" value="검색">
         </form>
     </div>

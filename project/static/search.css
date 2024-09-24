@@ -1,9 +1,6 @@
-#header{
-    width: 100%;
-}
-#section{
+.searchsection{
     width: 79%;
-    height: 750px;
+    height: 500px;
     float: left;
     border: solid black 1px;
 }
@@ -12,9 +9,6 @@
     height: 750px;
     float: right;
     border: solid black 1px;
-}
-#header > h1{
-    text-align: center;
 }
 form > input{
     margin-top: 10px;
