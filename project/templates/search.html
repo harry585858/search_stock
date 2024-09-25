@@ -18,7 +18,7 @@
         {% if i == 0:%}
         <div id="sidebar">
             <form action="/search" method="POST">
-                <input type="text" name="nameOfStock[]" placeholder="주식 이름 입력">
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="주식 이름 입력">
                     <datalist id="suggestions">
                         <option value="APPL">
                     </datalist>
