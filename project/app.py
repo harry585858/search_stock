@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from pandas_datareader import data
+#from pandas_datareader import data
 app=Flask(__name__)
 
 @app.route('/')
