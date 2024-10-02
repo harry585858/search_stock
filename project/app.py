@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
-#from pandas_datareader import data
+import numpy as np
+
 app=Flask(__name__)
 
 @app.route('/')
@@ -10,9 +11,7 @@ def index():
 def search():
     nameOfStock = {'','','',''}
     nameOfStock = request.form.getlist('nameOfStock[]')
-    num = 0
     return render_template('search.html',nameOfStock=nameOfStock)
 
-    
 if __name__=='__main__':
     app.run(debug=True)

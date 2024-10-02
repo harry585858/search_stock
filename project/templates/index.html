@@ -13,23 +13,22 @@
         <h1>주식예측</h1>
     </div>
     <div id = "section">
-        <p>여러 주식의 정보 </p>
+        <p>{{datas}}</p>
     </div>
     <div id = "sidebar">
         <form action="/search" method="POST">
             <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
             <datalist id="suggestions">
-                <option value="AAPL">애플</option>
-                <option value="ABNB">에어비앤비</option>
-                <option value="AMD">Advanced Micro Devices</option>
-                <option value="AMZN">아마존닷컴</option>
-                <option value="ARKK">ARKInnovation ETF</option>
-                <option value="ARM">ARM홀딩스</option>
-                <option value="ATVI">액티비전 블리자드</option>
-                <option value="AVGO">브로드컴</option>
-                <option value="AZN">아스트라제네카</option>
-                <option value="BA">보잉</option>
-                <option value="BABA">알리바바</option>
+                <option value="BTC">비트코인</option>
+                <option value="ETH">이더리움</option>
+                <option value="DOGE">도지</option>
+                <option value="AMZN">에이다</option>
+                <option value="SOL">솔라나</option>
+                <option value="SHIB">시바</option>
+                <option value="ETH">이더리움</option>
+                <option value="AMD">도지</option>
+                <option value="AMZN">에이다</option>
+                <option value="AMZN">솔라나</option>
             </datalist>
             <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
             <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">            
