@@ -40,7 +40,9 @@ def naver_callback():
 @app.route('/')
 def index():
     return render_template('index.html')
-
+@app.route('/login')
+def login():
+    return render_template('login.html')
 @app.route('/search',methods=['POST'])
 def search():
     nameOfStock = {'','','',''}
