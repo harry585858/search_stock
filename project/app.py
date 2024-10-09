@@ -7,7 +7,7 @@ import requests
 
 
 app=Flask(__name__)
-app.config['SECRET_KEY']='your_secret_key'
+app.config['SECRET_KEY']='password'
 # 네이버 로그인 요청
 @app.route('/naver/login')
 def naver_login():
@@ -40,9 +40,11 @@ def naver_callback():
 @app.route('/')
 def index():
     return render_template('index.html')
+
 @app.route('/login')
 def login():
     return render_template('login.html')
+
 @app.route('/search',methods=['POST'])
 def search():
     nameOfStock = {'','','',''}
