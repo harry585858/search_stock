@@ -17,3 +17,7 @@ form > input{
 button > img{
     width: 100px;
 }
+a{
+    color: black;
+    text-decoration: none;
+}

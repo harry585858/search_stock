@@ -3,8 +3,7 @@ import numpy as np
 import json
 from config import Config
 import requests
-
-
+import hashlib
 
 app=Flask(__name__)
 app.config['SECRET_KEY']='password'
@@ -51,5 +50,24 @@ def search():
     nameOfStock = request.form.getlist('nameOfStock[]')
     return render_template('search.html',nameOfStock=nameOfStock)
 
+@app.route('/makeid')
+def makeid():
+    return render_template('makeid.html')
+
+@app.route('/makeresult',methods=['POST'])
+def makeresult():
+    salt = 'HZaNK0en1n'
+    id=request.form['id']
+    pw=request.form['pw']
+    email=request.form['email']
+    if not id or not pw or not email:
+        return render_template('makeresult.html', result=False)
+    else:
+        pw = pw + salt
+        pw = pw.encode()
+        pw_hash=hashlib.sha512()
+        pw_hash.update(pw)
+        pw = pw_hash.hexdigest()
+        return render_template('makeresult.html',result = True)
 if __name__=='__main__':
     app.run(debug=True)
