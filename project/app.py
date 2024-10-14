@@ -63,7 +63,7 @@ def makeresult():
     pw=request.form['pw']
     email=request.form['email']
     if not id or not pw or not email:
-        return render_template('makeresult.html', result=False)#빈공간 있음
+        return render_template('makeresult.html', result=False, error=1)#빈공간 있음
     else:
         pw = pw + salt
         pw = pw.encode()
@@ -72,9 +72,14 @@ def makeresult():
         pw = pw_hash.hexdigest()
         with sqlite3.connect("database.db") as connection:
             cur = connection.cursor()
-            cur.execute("INSERT INTO user_data VALUES (?,?,?)",(id,pw,email))
-            connection.commit()
-        return render_template('makeresult.html',result = True)
+            cur.execute("SELECT * FROM user_data WHERE id = ?",(id,))
+            user = cur.fetchone()
+            if user:
+                return render_template('makeresult.html', result=False, error=0)#id 중복
+            else:
+                cur.execute("INSERT INTO user_data VALUES (?,?,?)",(id,pw,email))
+                connection.commit()
+                return render_template('makeresult.html',result = True)
 @app.route('/makelogin', methods=['POST'])
 def makelogin():
     salt = 'HZaNK0en1n'

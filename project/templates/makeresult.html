@@ -9,8 +9,10 @@
     {% if result %}
     <h1>회원가입 성공!</h1>
     <p><a href="/">돌아가기</a></p>
-    {% else %}
+    {% elif error == 1 %}
     <h1>회원가입 실패: 모든 필드를 입력하세요.</h1>
+    {% elif error == 0 %}
+    <h1>회원가입 실패: 이미 있는 아이디 입니다.</h1>
     {% endif %}
 </body>
 </html>
