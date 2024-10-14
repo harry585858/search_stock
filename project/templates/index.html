@@ -21,7 +21,11 @@
             <p>{{datas}}</p>
         </div>
         <div id = "sidebar">
+            {% if loggined %}
+            <a href="/logout"> 로그아웃</a>
+            {%else%}
             <a href="/login"> 로그인</a>
+            {%endif%}
             <form action="/search" method="POST">
                 <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
                 <datalist id="suggestions">

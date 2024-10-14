@@ -40,7 +40,11 @@ def naver_callback():
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    if 'logged_in' in session and session['logged_in']:
+        return render_template('index.html', logined = True)
+
+    else:
+        return render_template('index.html', logined = False)
 
 @app.route('/login')
 def login():
@@ -98,9 +102,16 @@ def makelogin():
             cur.execute("SELECT * FROM user_data WHERE id = ? AND pw = ?",(id,pw))
             user = cur.fetchone()
         if user:
+            session['user_id']=id
+            session['logged_in']=True
             return render_template('makelogin.html', success=True)
         else:
             return render_template('makelogin.html', success=False)#fail
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    session.pop('logged_in',None)
+    return redirect(url_for('login'))
 if __name__=='__main__':
     with sqlite3.connect("database.db") as connection:
         cur = connection.cursor()
