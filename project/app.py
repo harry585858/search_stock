@@ -4,6 +4,8 @@ import json
 from config import Config
 import requests
 import hashlib
+import sqlite3
+#db
 
 app=Flask(__name__)
 app.config['SECRET_KEY']='password'
@@ -56,24 +58,47 @@ def makeid():
 
 @app.route('/makeresult',methods=['POST'])
 def makeresult():
-    salt = 'HZaNK0en1n' 
+    salt = 'HZaNK0en1n'
     id=request.form['id']
     pw=request.form['pw']
     email=request.form['email']
     if not id or not pw or not email:
-        return render_template('makeresult.html', result=False)
+        return render_template('makeresult.html', result=False)#빈공간 있음
     else:
         pw = pw + salt
         pw = pw.encode()
         pw_hash=hashlib.sha512()
         pw_hash.update(pw)
         pw = pw_hash.hexdigest()
+        with sqlite3.connect("database.db") as connection:
+            cur = connection.cursor()
+            cur.execute("INSERT INTO user_data VALUES (?,?,?)",(id,pw,email))
+            connection.commit()
         return render_template('makeresult.html',result = True)
 @app.route('/makelogin', methods=['POST'])
 def makelogin():
+    salt = 'HZaNK0en1n'
     id=request.form['id']
     pw=request.form['pw']
-    if True:
-        return render_template('makelogin.html', success=True)
+    if not id or not pw:
+        return render_template('makelogin.html', success=False)#빈공간 있음
+    else:
+        pw = pw + salt
+        pw = pw.encode()
+        pw_hash=hashlib.sha512()
+        pw_hash.update(pw)
+        pw = pw_hash.hexdigest()
+        with sqlite3.connect("database.db") as connection:
+            cur = connection.cursor()
+            cur.execute("SELECT * FROM user_data WHERE id = ? AND pw = ?",(id,pw))
+            user = cur.fetchone()
+        if user:
+            return render_template('makelogin.html', success=True)
+        else:
+            return render_template('makelogin.html', success=False)#fail
 if __name__=='__main__':
+    with sqlite3.connect("database.db") as connection:
+        cur = connection.cursor()
+        cur.execute("CREATE TABLE IF NOT EXISTS user_data (id TEXT, pw TEXT, email TEXT)")
+        connection.commit()
     app.run(debug=True)
