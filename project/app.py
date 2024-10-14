@@ -56,7 +56,7 @@ def makeid():
 
 @app.route('/makeresult',methods=['POST'])
 def makeresult():
-    salt = 'HZaNK0en1n'
+    salt = 'HZaNK0en1n' 
     id=request.form['id']
     pw=request.form['pw']
     email=request.form['email']
@@ -69,5 +69,11 @@ def makeresult():
         pw_hash.update(pw)
         pw = pw_hash.hexdigest()
         return render_template('makeresult.html',result = True)
+@app.route('/makelogin', methods=['POST'])
+def makelogin():
+    id=request.form['id']
+    pw=request.form['pw']
+    if True:
+        return render_template('makelogin.html', success=True)
 if __name__=='__main__':
     app.run(debug=True)
