@@ -21,7 +21,7 @@
             <p>{{datas}}</p>
         </div>
         <div id = "sidebar">
-            {% if loggined %}
+            {% if logined==True %}
             <a href="/logout"> 로그아웃</a>
             {%else%}
             <a href="/login"> 로그인</a>
@@ -35,10 +35,6 @@
                     <option value="AMZN">에이다</option>
                     <option value="SOL">솔라나</option>
                     <option value="SHIB">시바</option>
-                    <option value="ETH">이더리움</option>
-                    <option value="AMD">도지</option>
-                    <option value="AMZN">에이다</option>
-                    <option value="AMZN">솔라나</option>
                 </datalist>
                 <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
                 <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">            
