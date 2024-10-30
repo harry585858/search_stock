@@ -10,7 +10,7 @@ function App() {
         <p>Enter your ID and PW to Sign up.</p>
         <form
           name="Login-data"
-          action="http://localhost:8000/login"
+          action="http://localhost:8000/makelogin"
           method="post"
         >
           <input name="id" type="text" placeholder="ID 입력..." />
