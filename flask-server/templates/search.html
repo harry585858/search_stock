@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @import "/static/css/search.css";
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1><a href="/">주식예측</h1><a></h1>
+    </div>
+    {% for i in range(4) %}
+        {%if nameOfStock[i] != '':%}
+        <div class="searchsection">
+            <p>{{nameOfStock[i]}}</p>
+        </div>
+        {%endif%}
+        {% if i == 0:%}
+        <div id="sidebar">
+            <form action="/search" method="POST">
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
+                <datalist id="suggestions">
+                    <option value="BTC">비트코인</option>
+                    <option value="ETH">이더리움</option>
+                    <option value="DOGE">도지</option>
+                    <option value="AMZN">에이다</option>
+                    <option value="SOL">솔라나</option>
+                    <option value="SHIB">시바</option>
+                </datalist>
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
+                <input type="submit" value="검색">
+            </form>
+        </div>
+        {%endif%}
+    {% endfor %}
+</body>
+</html>

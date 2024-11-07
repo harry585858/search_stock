@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주식예측</title>
+    <style>
+        @import "/static/css/index.css";
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script>
+
+    </script>
+</head>
+<body>
+    <div id="header">
+        <h1>주식예측</h1>
+    </div>
+    <div id="container">
+        <div id = "section">
+            <p>{{datas}}</p>
+        </div>
+        <div id = "sidebar">
+            {% if logined==True %}
+            <a href="/logout"> 로그아웃</a>
+            {%else%}
+            <a href="/login"> 로그인</a>
+            {%endif%}
+            <form action="/search" method="POST">
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
+                <datalist id="suggestions">
+                    <option value="BTC">비트코인</option>
+                    <option value="ETH">이더리움</option>
+                    <option value="DOGE">도지</option>
+                    <option value="AMZN">에이다</option>
+                    <option value="SOL">솔라나</option>
+                    <option value="SHIB">시바</option>
+                </datalist>
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">            
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">            
+                <input type="submit" value="검색">
+            </form>
+        </div>
+    </div>
+</body>
+</html>
