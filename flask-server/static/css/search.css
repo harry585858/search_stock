@@ -1,0 +1,19 @@
+.searchsection{
+    width: 79%;
+    height: 300px;
+    float: left;
+    border: solid black 1px;
+}
+#sidebar{
+    width: 20%;
+    height: 750px;
+    float: right;
+    border: solid black 1px;
+}
+form > input{
+    margin-top: 10px;
+}
+a{
+    color: black;
+    text-decoration: none;
+}
