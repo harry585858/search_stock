@@ -4,21 +4,18 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 import requests
 
-# Flask 애플리케이션 초기화
 app = Flask(__name__)
 
 #내부 데이터베이스 URI 설정 (현재 디렉토리에 example.db 파일 생성)
-#basedir = os.path.abspath(os.path.dirname(__file__))  # 현재 파일의 디렉토리 경로
-#f'sqlite:///{os.path.join(basedir, "example.db")}'
-#app.config['SECRET_KEY'] = 'password'
+basedir = os.path.abspath(os.path.dirname(__file__))  # 현재 파일의 디렉토리 경로
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "example.db")}'
+app.config['SECRET_KEY'] = 'password'
 
-#외부db설정
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:비번%21@database-1.c5cys28ymsiz.ap-northeast-2.rds.amazonaws.com:3306/test'
+# 외부 데이터베이스 설정
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:비번%21@database-1.c5cys28ymsiz.ap-northeast-2.rds.amazonaws.com:3306/test'
 
 #config
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# SQLAlchemy 객체 생성 및 초기화
 db = SQLAlchemy(app)
 
 # 데이터베이스 모델 정의
@@ -31,9 +28,16 @@ class User(db.Model):
     def __repr__(self):
         return f'<User {self.id}>'
 
-# 데이터베이스 초기화 및 테이블 생성
+class FavoriteData(db.Model):
+    __tablename__ = 'favorite_data'
+    id = db.Column(db.String(50), primary_key=True)
+    item_id = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return f'<FavoriteData {self.id}>'
+
 with app.app_context():
-    db.create_all()  # 데이터베이스가 없다면 생성합니다.
+    db.create_all()
 
 # 네이버 로그인 요청
 @app.route('/naver/login')
@@ -46,43 +50,23 @@ def naver_login():
 def naver_callback():
     code = request.args.get('code')
     state = request.args.get('state')
-    
-    # 액세스 토큰 요청
     token_url = f"{Config.NAVER_TOKEN_URL}?grant_type=authorization_code&client_id={Config.NAVER_CLIENT_ID}&client_secret={Config.NAVER_CLIENT_SECRET}&code={code}&state={state}"
     token_response = requests.get(token_url)
     token_data = token_response.json()
     access_token = token_data.get('access_token')
-    
-    # 프로필 정보 요청
     headers = {'Authorization': f'Bearer {access_token}'}
     profile_response = requests.get(Config.NAVER_PROFILE_URL, headers=headers)
     profile_data = profile_response.json()
-    
     if profile_data.get('response'):
         user_info = profile_data['response']
         return jsonify(user_info)
     else:
         return jsonify({"error": "Failed to retrieve user info"}), 400
 
-# @app.route('/')
-# def index():
-#     if 'logged_in' in session and session['logged_in']:
-#         return render_template('index.html', logined=True)
-#     else:
-#         return render_template('index.html', logined=False)
-
-# @app.route('/login')
-# def login():
-#     return render_template('login.html')
-
 @app.route('/search', methods=['POST'])
 def search():
     nameOfStock = request.form.getlist('nameOfStock[]')
     return render_template('search.html', nameOfStock=nameOfStock)
-
-# @app.route('/makeid')
-# def makeid():
-#     return render_template('makeid.html')
 
 @app.route('/makeresult', methods=['POST'])
 def makeresult():
@@ -91,43 +75,59 @@ def makeresult():
     pw = request.form['pw']
     email = request.form['email']
     if not id or not pw or not email:
-        return render_template('makeresult.html', result=False, error=1)  # 빈공간 있음
-    
-    # 비밀번호 해싱
+        return render_template('makeresult.html', result=False, error=1)
     pw = hashlib.sha512((pw + salt).encode()).hexdigest()
-
-    # SQLAlchemy 사용하여 데이터베이스에 저장
     existing_user = User.query.filter_by(id=id).first()
     if existing_user:
-        return render_template('makeresult.html', result=False, error=0)  # id 중복
-    else:
-        new_user = User(id=id, pw=pw, email=email)
-        db.session.add(new_user)
-        db.session.commit()
-        return render_template('makeresult.html', result=True)
-@app.route('/signup/check',methods['POST'])
+        return render_template('makeresult.html', result=False, error=0)
+    new_user = User(id=id, pw=pw, email=email)
+    db.session.add(new_user)
+    db.session.commit()
+    return render_template('makeresult.html', result=True)
+
+@app.route('/signup/check', methods=['POST'])
 def signup_check():
     id = request.form['id']
-    pw = request.form['pw']
     email = request.form['email']
     existing_user = User.query.filter_by(id=id).first()
-    existing_email = User.quert.filter_by(email=email).first()
-    if existing_user and existing_email:
+    existing_email = User.query.filter_by(email=email).first()
+    if existing_user or existing_email:
         return jsonify({"error": "1"})
+    return jsonify({"success": "0"})
 
-@app.route('searchstock')
+@app.route('/searchstock')
 def searchstock():
+    return jsonify({"error": "1"})
 
-@app.route('stockdetail')
+@app.route('/stockdetail')
 def stockdetail():
+    return jsonify({"error": "1"})
 
-@app.route('stockdetail/fatorite')
-def stockdetail_favorite():
-@app.route('stockdetail/rate')
+@app.route('/stockdetail/favorite/<string:item_id>', methods=['POST', 'DELETE'])
+def stockdetail_favorite(item_id):
+    if request.method == 'POST':
+        # 즐겨찾기 추가
+        new_favorite = FavoriteData(id=session.get('user_id'), item_id=item_id)
+        db.session.add(new_favorite)
+        db.session.commit()
+        return jsonify({"message": f"Item {item_id} added to favorites"}), 201
+    elif request.method == 'DELETE':
+        # 즐겨찾기 삭제
+        favorite = FavoriteData.query.filter_by(id=session.get('user_id'), item_id=item_id).first()
+        if favorite:
+            db.session.delete(favorite)
+            db.session.commit()
+            return jsonify({"message": f"Item {item_id} removed from favorites"}), 200
+        else:
+            return jsonify({"error": "Favorite not found"}), 404
+
+@app.route('/stockdetail/rate')
 def stockdetail_rate():
-    @app.route('stockdetail/ratedelete')
-def stockdetail_ratedelete():
+    return jsonify({"message": "Rate functionality not implemented"})
 
+@app.route('/stockdetail/ratedelete')
+def stockdetail_ratedelete():
+    return jsonify({"message": "Rate delete functionality not implemented"})
 
 @app.route('/makelogin', methods=['POST'])
 def makelogin():
@@ -135,19 +135,15 @@ def makelogin():
     id = request.form['id']
     pw = request.form['pw']
     if not id or not pw:
-        return render_template('makelogin.html', success=False)  # 빈공간 있음
-    
-    # 비밀번호 해싱
+        return render_template('makelogin.html', success=False)
     pw = hashlib.sha512((pw + salt).encode()).hexdigest()
-
-    # SQLAlchemy를 사용하여 데이터베이스에서 사용자 조회
     user = User.query.filter_by(id=id, pw=pw).first()
     if user:
         session['user_id'] = id
         session['logged_in'] = True
         return render_template('makelogin.html', success=True)
     else:
-        return render_template('makelogin.html', success=False)  # 로그인 실패
+        return render_template('makelogin.html', success=False)
 
 @app.route('/logout')
 def logout():
