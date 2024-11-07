@@ -3,7 +3,7 @@ import hashlib
 from flask_sqlalchemy import SQLAlchemy
 import os
 import requests
-
+#https://github.com/harry585858/search_stock.git
 app = Flask(__name__)
 
 #내부 데이터베이스 URI 설정 (현재 디렉토리에 example.db 파일 생성)
@@ -31,7 +31,7 @@ class User(db.Model):
 class FavoriteItem(db.Model):
     __tablename__ = 'favorite_item'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(50), db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.String(50), db.ForeignKey('user_data.id'), nullable=False)
     item_id = db.Column(db.String(50), nullable=False)  # 즐겨찾기 항목 ID
 
 with app.app_context():
@@ -103,15 +103,22 @@ def stockdetail():
 
 @app.route('/stockdetail/favorite/<string:item_id>', methods=['POST', 'DELETE'])
 def stockdetail_favorite(item_id):
+    user_id = session.get('user_id')  # 세션에서 사용자 ID 가져오기
+    
     if request.method == 'POST':
         # 즐겨찾기 추가
-        new_favorite = FavoriteData(id=session.get('user_id'), item_id=item_id)
+        existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, item_id=item_id).first()
+        if existing_favorite:
+            return jsonify({"message": f"Item {item_id} is already in favorites"}), 200
+        
+        new_favorite = FavoriteItem(user_id=user_id, item_id=item_id)
         db.session.add(new_favorite)
         db.session.commit()
         return jsonify({"message": f"Item {item_id} added to favorites"}), 201
+
     elif request.method == 'DELETE':
         # 즐겨찾기 삭제
-        favorite = FavoriteData.query.filter_by(id=session.get('user_id'), item_id=item_id).first()
+        favorite = FavoriteItem.query.filter_by(user_id=user_id, item_id=item_id).first()
         if favorite:
             db.session.delete(favorite)
             db.session.commit()
@@ -148,6 +155,22 @@ def logout():
     session.pop('user_id', None)
     session.pop('logged_in', None)
     return redirect(url_for('login'))
+#####
+@app.route('/')
+def index():
+    if 'logged_in' in session and session['logged_in']:
+        user = User.query.get(session.get('user_id'))
+        favorites = user.favorites
+        return render_template('index.html', logined = True, favorites=favorites)
+
+    else:
+        return render_template('index.html', logined = False)
+@app.route('/login')
+def login():
+    return render_template('login.html')
+@app.route('/makeid')
+def makeid():
+    return render_template('makeid.html')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

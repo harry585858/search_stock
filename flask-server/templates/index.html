@@ -19,6 +19,16 @@
     <div id="container">
         <div id = "section">
             <p>{{datas}}</p>
+            <p>즐겨찾기</p>
+            {% for i in favorites %}
+            {{ i.item_id }}
+            {% endfor %}
+            <form action="/stockdetail/favorite/abc" method="POST">
+                <input type="submit" name="" id="">
+            </form>
+            <form action="/stockdetail/favorite/abc" method="DELETE">
+                <input type="submit" name="" id="">
+            </form>
         </div>
         <div id = "sidebar">
             {% if logined==True %}
