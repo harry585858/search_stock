@@ -24,17 +24,15 @@ class User(db.Model):
     id = db.Column(db.String(50), primary_key=True)
     pw = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-
+    favorites = db.relationship('FavoriteItem', backref='user', lazy=True)
     def __repr__(self):
         return f'<User {self.id}>'
 
-class FavoriteData(db.Model):
-    __tablename__ = 'favorite_data'
-    id = db.Column(db.String(50), primary_key=True)
-    item_id = db.Column(db.String(50), nullable=False)
-
-    def __repr__(self):
-        return f'<FavoriteData {self.id}>'
+class FavoriteItem(db.Model):
+    __tablename__ = 'favorite_item'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), db.ForeignKey('user.id'), nullable=False)
+    item_id = db.Column(db.String(50), nullable=False)  # 즐겨찾기 항목 ID
 
 with app.app_context():
     db.create_all()
