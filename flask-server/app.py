@@ -31,35 +31,17 @@ class User(db.Model):
         return f'<User {self.id}>'
 
 class FavoriteItem(db.Model):
-    __tablename__ = 'favorite_item'
+    __tablename__ = 'Userfavorite'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(50), db.ForeignKey('user_data.id'), nullable=False)
     item_id = db.Column(db.String(50), nullable=False)  # 즐겨찾기 항목 ID
 class rateItem(db.Model):
-    __tablename__ = 'rate_item'
+    __tablename__ = 'Userrating'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(50), db.ForeignKey('user_data.id'), nullable=False)
     item_id = db.Column(db.String(50), nullable=False)  # 즐겨찾기 항목 ID
     star = db.Column(db.Integer,nullable=False)
     rate = db.Column(db.String(500),nullable=False)
-class ItemAverageRating(db.Model):
-    __tablename__ = 'item_average_rating'
-    item_id = db.Column(db.String(50), primary_key=True)
-    average_rating = db.Column(db.Float, nullable=False, default=0.0)
-
-# 평점이 추가될 때마다 평균 평점을 업데이트하는 함수
-@event.listens_for(rateItem, 'after_insert')
-def update_average_rating(mapper, connection, target):
-    item_id = target.item_id
-    avg_rating = db.session.query(func.avg(rateItem.star)).filter_by(item_id=item_id).scalar()
-    # 평균 평점이 저장되는 테이블에 업데이트
-    avg_record = db.session.query(ItemAverageRating).filter_by(item_id=item_id).first()
-    if avg_record:
-        avg_record.average_rating = avg_rating
-    else:
-        new_avg = ItemAverageRating(item_id=item_id, average_rating=avg_rating)
-        db.session.add(new_avg)
-    db.session.commit()
 
 with app.app_context():
     db.create_all()
@@ -128,9 +110,9 @@ def stockdetail():
     stockname = request.form("stockname", none)
     user_id = session.get('user_id')
     existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, item_id=stockname).first()
-    star = ItemAverageRating.quert.filter_by(item_id=stockname).first()
+    star = db.session.query(func.avg(rateItem.star)).filter(rateItem.item_id==stockname).scalar()
     if star:
-        return jsonify({"평균평점": star.average_rating, "즐겨찾기 여부": existing_favorite})
+        return jsonify({"평균평점": star, "즐겨찾기 여부": existing_favorite})
     else:
         return jsonify({"error", "존재안함"})
 
