@@ -25,6 +25,7 @@ class User(db.Model):
     pw = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     favorites = db.relationship('FavoriteItem', backref='user', lazy=True)
+    rate = db.relationship('rateItem', backref='user', lazy=True)
     def __repr__(self):
         return f'<User {self.id}>'
 
@@ -33,6 +34,13 @@ class FavoriteItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(50), db.ForeignKey('user_data.id'), nullable=False)
     item_id = db.Column(db.String(50), nullable=False)  # 즐겨찾기 항목 ID
+class rateItem(db.Model):
+    __tablename__ = 'rate_item'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), db.ForeignKey('user_data.id'), nullable=False)
+    item_id = db.Column(db.String(50), nullable=False)  # 즐겨찾기 항목 ID
+    star = db.Column(db.Integer,nullable=False)
+    rate = db.Column(db.String(500),nullable=False)
 
 with app.app_context():
     db.create_all()
@@ -93,12 +101,10 @@ def signup_check():
         return jsonify({"error": "1"})
     return jsonify({"success": "0"})
 
-@app.route('/searchstock')
-def searchstock():
-    return jsonify({"error": "1"})
-
-@app.route('/stockdetail')
+@app.route('/stockdetail', methods=['POST'])
 def stockdetail():
+    stockname = request.form("stockname", none)
+
     return jsonify({"error": "1"})
 
 @app.route('/stockdetail/favorite/<string:item_id>', methods=['POST', 'DELETE'])
@@ -126,13 +132,30 @@ def stockdetail_favorite(item_id):
         else:
             return jsonify({"error": "Favorite not found"}), 404
 
-@app.route('/stockdetail/rate')
-def stockdetail_rate():
-    return jsonify({"message": "Rate functionality not implemented"})
+@app.route('/stockdetail/rate/<string:item_id>', methods=['POST'])
+def stockdetail_rate(item_id):
+    user_id = session.get('user_id')
+    star = request.form("star")
+    rate = request.form("rate")
+    existing_rate = FavoriteItem.query.filter_by(user_id=user_id, item_id=item_id).first()
+    if existing_rate:
+        new_rate = rateItem(id=id, user_id=user_id,item_id=item_id, star=star,rate=rate)
+        db.session.add(new_rate)
+        db.session.commit()
+        return jsonify({"message": "저장 완료"})
+    else:return jsonify({"message": "이미 존재"})
+        
 
-@app.route('/stockdetail/ratedelete')
+@app.route('/stockdetail/ratedelete/<string:item_id>', methods=['DELETE'])
 def stockdetail_ratedelete():
-    return jsonify({"message": "Rate delete functionality not implemented"})
+    user_id = session.get('user_id')
+    existing_rate = FavoriteItem.query.filter_by(user_id=user_id, item_id=item_id).first()
+    if existing_rate:
+        db.session.delete(existing_rate)
+        db.session.commit()
+        return jsonify({"message": "Rate delete"})
+    else:
+        return jsonify({"message": "없음"}), 404
 
 @app.route('/makelogin', methods=['POST'])
 def makelogin():
@@ -155,6 +178,14 @@ def logout():
     session.pop('user_id', None)
     session.pop('logged_in', None)
     return redirect(url_for('login'))
+@app.route('/mypage', methods=['POST'])
+def mypage():
+    user_id = session.get('user_id')
+    favoriteList = FavoriteItem.query.filter_by(user_id=user_id).all()
+    if favoriteList:
+        return jsonify({"message": "Item in favorites"}), 200
+    else:
+        return jsonify({"message": "nothing"}), 200
 #####
 @app.route('/')
 def index():
