@@ -26,9 +26,27 @@
             <form action="/stockdetail/favorite/abc" method="POST">
                 <input type="submit" name="" id="">
             </form>
-            <form action="/stockdetail/favorite/abc" method="DELETE">
-                <input type="submit" name="" id="">
+            <form action="/stockdetail/favorite/abc" method="POST" id="delete-form">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="submit" value="Delete">
             </form>
+            <script>
+                document.getElementById("delete-form").onsubmit = function(event) {
+                    event.preventDefault();  // 기본 폼 제출 방지
+                    fetch(this.action, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            // 필요한 데이터 추가 (예: item_id 등)
+                        })
+                    })
+                    .then(response => response.json())  // 응답 처리
+                    .then(data => console.log(data))
+                    .catch(error => console.error('Error:', error));
+                }
+            </script>
         </div>
         <div id = "sidebar">
             {% if logined==True %}

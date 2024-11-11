@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import hashlib
-from flask_sqlalchemy import SQLAlchemy, event, func
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import event, func
 import os
 import requests
 #https://github.com/harry585858/search_stock.git
