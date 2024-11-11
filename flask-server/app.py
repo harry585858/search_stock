@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import hashlib
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, event, func
 import os
 import requests
 #https://github.com/harry585858/search_stock.git
@@ -41,6 +41,24 @@ class rateItem(db.Model):
     item_id = db.Column(db.String(50), nullable=False)  # 즐겨찾기 항목 ID
     star = db.Column(db.Integer,nullable=False)
     rate = db.Column(db.String(500),nullable=False)
+class ItemAverageRating(db.Model):
+    __tablename__ = 'item_average_rating'
+    item_id = db.Column(db.String(50), primary_key=True)
+    average_rating = db.Column(db.Float, nullable=False, default=0.0)
+
+# 평점이 추가될 때마다 평균 평점을 업데이트하는 함수
+@event.listens_for(rateItem, 'after_insert')
+def update_average_rating(mapper, connection, target):
+    item_id = target.item_id
+    avg_rating = db.session.query(func.avg(rateItem.star)).filter_by(item_id=item_id).scalar()
+    # 평균 평점이 저장되는 테이블에 업데이트
+    avg_record = db.session.query(ItemAverageRating).filter_by(item_id=item_id).first()
+    if avg_record:
+        avg_record.average_rating = avg_rating
+    else:
+        new_avg = ItemAverageRating(item_id=item_id, average_rating=avg_rating)
+        db.session.add(new_avg)
+    db.session.commit()
 
 with app.app_context():
     db.create_all()
@@ -98,14 +116,22 @@ def signup_check():
     existing_user = User.query.filter_by(id=id).first()
     existing_email = User.query.filter_by(email=email).first()
     if existing_user or existing_email:
-        return jsonify({"error": "1"})
+        if existing_email:
+            return jsonify({"error": "same_email"})
+        if existing_user:
+            return jsonify({"error": "same_user"})
     return jsonify({"success": "0"})
 
 @app.route('/stockdetail', methods=['POST'])
 def stockdetail():
     stockname = request.form("stockname", none)
-
-    return jsonify({"error": "1"})
+    user_id = session.get('user_id')
+    existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, item_id=stockname).first()
+    star = ItemAverageRating.quert.filter_by(item_id=stockname).first()
+    if star:
+        return jsonify({"평균평점": star.average_rating, "즐겨찾기 여부": existing_favorite})
+    else:
+        return jsonify({"error", "존재안함"})
 
 @app.route('/stockdetail/favorite/<string:item_id>', methods=['POST', 'DELETE'])
 def stockdetail_favorite(item_id):
@@ -172,7 +198,6 @@ def makelogin():
         return render_template('makelogin.html', success=True)
     else:
         return render_template('makelogin.html', success=False)
-
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
