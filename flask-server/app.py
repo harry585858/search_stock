@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event, func
 import os
 import requests
+from config import Config
 #https://github.com/harry585858/search_stock.git
 app = Flask(__name__)
 

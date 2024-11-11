@@ -23,9 +23,26 @@
             {% for i in favorites %}
             {{ i.item_id }}
             {% endfor %}
-            <form action="/stockdetail/favorite/abc" method="POST">
+            <form action="/stockdetail/favorite/abc" method="POST" id="new">
                 <input type="submit" name="" id="">
             </form>
+            <script>
+                document.getElementById("new").onsubmit = function(event) {
+                    event.preventDefault();  // 기본 폼 제출 방지
+                    fetch(this.action, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            // 필요한 데이터 추가 (예: item_id 등)
+                        })
+                    })
+                    .then(response => response.json())  // 응답 처리
+                    .then(data => console.log(data))
+                    .catch(error => console.error('Error:', error));
+                }
+            </script>
             <form action="/stockdetail/favorite/abc" method="POST" id="delete-form">
                 <input type="hidden" name="_method" value="DELETE">
                 <input type="submit" value="Delete">
