@@ -21,7 +21,7 @@
             <p>{{datas}}</p>
             <p>즐겨찾기</p>
             {% for i in favorites %}
-            {{ i.item_id }}
+            {{ i.stock_code }}
             {% endfor %}
             <form action="/stockdetail/favorite/abc" method="POST" id="new">
                 <input type="submit" name="" id="">

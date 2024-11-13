@@ -22,10 +22,10 @@ db = SQLAlchemy(app)
 
 # 데이터베이스 모델 정의
 class User(db.Model):
-    __tablename__ = 'user_data'
-    id = db.Column(db.String(50), primary_key=True)
-    pw = db.Column(db.String(128), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    __tablename__ = 'Users'
+    user_id = db.Column(db.String(50), primary_key=True)
+    user_password = db.Column(db.String(128), nullable=False)
+    user_email = db.Column(db.String(120), unique=True, nullable=False)
     favorites = db.relationship('FavoriteItem', backref='user', lazy=True)
     rate = db.relationship('rateItem', backref='user', lazy=True)
     def __repr__(self):
@@ -34,15 +34,15 @@ class User(db.Model):
 class FavoriteItem(db.Model):
     __tablename__ = 'Userfavorite'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(50), db.ForeignKey('user_data.id'), nullable=False)
-    item_id = db.Column(db.String(50), nullable=False)  # 즐겨찾기 항목 ID
+    user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'), nullable=False)
+    stock_code = db.Column(db.String(20), nullable=False)  # 즐겨찾기 항목 ID
 class rateItem(db.Model):
     __tablename__ = 'Userrating'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(50), db.ForeignKey('user_data.id'), nullable=False)
-    item_id = db.Column(db.String(50), nullable=False)  # 즐겨찾기 항목 ID
-    star = db.Column(db.Integer,nullable=False)
-    rate = db.Column(db.String(500),nullable=False)
+    user_id = db.Column(db.String(50), db.ForeignKey('Users.user_id'), nullable=False)
+    stock_code = db.Column(db.String(20), nullable=False)  # 즐겨찾기 항목 ID
+    rating = db.Column(db.DECIMAL(precision=2,scale=1),nullable=False)
+    content = db.Column(db.String(500),nullable=False)
 
 with app.app_context():
     db.create_all()
@@ -85,10 +85,10 @@ def makeresult():
     if not id or not pw or not email:
         return render_template('makeresult.html', result=False, error=1)
     pw = hashlib.sha512((pw + salt).encode()).hexdigest()
-    existing_user = User.query.filter_by(id=id).first()
+    existing_user = User.query.filter_by(user_id=id).first()
     if existing_user:
         return render_template('makeresult.html', result=False, error=0)
-    new_user = User(id=id, pw=pw, email=email)
+    new_user = User(user_id=id, user_password=pw, user_email=email)
     db.session.add(new_user)
     db.session.commit()
     return render_template('makeresult.html', result=True)
@@ -97,8 +97,8 @@ def makeresult():
 def signup_check():
     id = request.form['id']
     email = request.form['email']
-    existing_user = User.query.filter_by(id=id).first()
-    existing_email = User.query.filter_by(email=email).first()
+    existing_user = User.query.filter_by(user_id=id).first()
+    existing_email = User.query.filter_by(user_email=email).first()
     if existing_user or existing_email:
         if existing_email:
             return jsonify({"error": "same_email"})
@@ -110,56 +110,56 @@ def signup_check():
 def stockdetail():
     stockname = request.form("stockname", none)
     user_id = session.get('user_id')
-    existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, item_id=stockname).first()
-    star = db.session.query(func.avg(rateItem.star)).filter(rateItem.item_id==stockname).scalar()
+    existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stockname).first()
+    star = db.session.query(func.avg(rateItem.rating)).filter(rateItem.stock_code==stockname).scalar()
     if star:
         return jsonify({"평균평점": star, "즐겨찾기 여부": existing_favorite})
     else:
         return jsonify({"error", "존재안함"})
 
-@app.route('/stockdetail/favorite/<string:item_id>', methods=['POST', 'DELETE'])
-def stockdetail_favorite(item_id):
+@app.route('/stockdetail/favorite/<string:stock_code>', methods=['POST', 'DELETE'])
+def stockdetail_favorite(stock_code):
     user_id = session.get('user_id')  # 세션에서 사용자 ID 가져오기
     
     if request.method == 'POST':
         # 즐겨찾기 추가
-        existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, item_id=item_id).first()
+        existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
         if existing_favorite:
-            return jsonify({"message": f"Item {item_id} is already in favorites"}), 200
+            return jsonify({"message": f"Item {stock_code} is already in favorites"}), 200
         
-        new_favorite = FavoriteItem(user_id=user_id, item_id=item_id)
+        new_favorite = FavoriteItem(user_id=user_id, stock_code=stock_code)
         db.session.add(new_favorite)
         db.session.commit()
-        return jsonify({"message": f"Item {item_id} added to favorites"}), 201
+        return jsonify({"message": f"Item {stock_code} added to favorites"}), 201
 
     elif request.method == 'DELETE':
         # 즐겨찾기 삭제
-        favorite = FavoriteItem.query.filter_by(user_id=user_id, item_id=item_id).first()
+        favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
         if favorite:
             db.session.delete(favorite)
             db.session.commit()
-            return jsonify({"message": f"Item {item_id} removed from favorites"}), 200
+            return jsonify({"message": f"Item {stock_code} removed from favorites"}), 200
         else:
             return jsonify({"error": "Favorite not found"}), 404
 
-@app.route('/stockdetail/rate/<string:item_id>', methods=['POST'])
-def stockdetail_rate(item_id):
+@app.route('/stockdetail/rate/<string:stock_code>', methods=['POST'])
+def stockdetail_rate(stock_code):
     user_id = session.get('user_id')
     star = request.form("star")
     rate = request.form("rate")
-    existing_rate = FavoriteItem.query.filter_by(user_id=user_id, item_id=item_id).first()
+    existing_rate = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
     if existing_rate:
-        new_rate = rateItem(id=id, user_id=user_id,item_id=item_id, star=star,rate=rate)
+        new_rate = rateItem(id=id, user_id=user_id,stock_code=stock_code, star=star,rate=rate)
         db.session.add(new_rate)
         db.session.commit()
         return jsonify({"message": "저장 완료"})
     else:return jsonify({"message": "이미 존재"})
         
 
-@app.route('/stockdetail/ratedelete/<string:item_id>', methods=['DELETE'])
+@app.route('/stockdetail/ratedelete/<string:stock_code>', methods=['DELETE'])
 def stockdetail_ratedelete():
     user_id = session.get('user_id')
-    existing_rate = FavoriteItem.query.filter_by(user_id=user_id, item_id=item_id).first()
+    existing_rate = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
     if existing_rate:
         db.session.delete(existing_rate)
         db.session.commit()
@@ -175,7 +175,7 @@ def makelogin():
     if not id or not pw:
         return render_template('makelogin.html', success=False)
     pw = hashlib.sha512((pw + salt).encode()).hexdigest()
-    user = User.query.filter_by(id=id, pw=pw).first()
+    user = User.query.filter_by(user_id=id, user_password=pw).first()
     if user:
         session['user_id'] = id
         session['logged_in'] = True
