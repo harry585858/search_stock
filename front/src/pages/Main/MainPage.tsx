@@ -6,9 +6,7 @@ export const MainPage = () => {
   return (
     <Root>
       <Header showLogo={true} />
-      <CommonSection>
-        <div>ab</div>
-      </CommonSection>
+      <CommonSection>Main page</CommonSection>
     </Root>
   );
 };

@@ -1,9 +1,11 @@
-import { CommonSection } from "../../../components/CommonSection/CommonSection";
+import { Root } from "./styled";
+import { Header } from "../../../components/Header";
 
 export const MyPage = () => {
   return (
-    <CommonSection>
-      <div>1234</div>
-    </CommonSection>
+    <Root>
+      <Header showLogo={true} />
+      Mypage
+    </Root>
   );
 };
