@@ -5,6 +5,7 @@ export const Root = styled.div`
   display: flex;
   justify-content: center;
   background-color: #ffffff;
+  margin-top: 100px;
 `;
 
 export const Container = styled.div`

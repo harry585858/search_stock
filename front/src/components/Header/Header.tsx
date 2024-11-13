@@ -21,14 +21,13 @@ export const Header: FC<HeaderProps> = ({ showLogo }) => {
 };
 
 const Root = styled.header`
-  position: fixed;
-  top: 0;
-  left: 20px;
-  width: 100%;
+  width: 95%;
   display: flex;
   align-items: baseline;
+  position: fixed;
+  top: 0;
   gap: 20px;
-  border-bottom: 1px;
+  border-bottom: 1px solid #8c86a8;
 
   .logo {
     display: inline;
