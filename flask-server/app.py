@@ -5,6 +5,7 @@ from sqlalchemy import event, func, DECIMAL
 import os
 import requests
 from config import Config
+from datetime import timedelta
 #https://github.com/harry585858/search_stock.git
 app = Flask(__name__)
 #내부 데이터베이스 URI 설정 (현재 디렉토리에 example.db 파일 생성)
@@ -19,6 +20,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://back:back1234@database-
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 app.secret_key='비밀키'
+app.permanent_session_lifetime = timedelta(minutes=30)
 # 데이터베이스 모델 정의
 class User(db.Model):
     __tablename__ = 'Users'
@@ -196,8 +198,8 @@ def stockdetail_rate(stock_code):
     rating = request.form("rating")
     content = request.form("content")
     existing_rate = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
-    if existing_rate:
-        new_rate = rateItem(stock_code=stock_code, user_id=user_id,stock_code=stock_code, rating=rating,content=content)
+    if not existing_rate:
+        new_rate = rateItem(stock_code=stock_code, user_id=user_id, rating=rating,content=content)
         db.session.add(new_rate)
         db.session.commit()
         return jsonify({"message": "저장 완료"})
@@ -249,6 +251,7 @@ def index():
     if 'logged_in' in session and session['logged_in']:
         user = User.query.get(session.get('user_id'))
         favorites = user.favorites
+        session.permanent = True
         return render_template('index.html', logined = True, favorites=favorites)
 
     else:
