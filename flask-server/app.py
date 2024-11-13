@@ -48,7 +48,7 @@ class Predictstocks(db.Model):
     stock_name = db.Column(db.String(20), nullable=False)
     stock_code = db.Column(db.String(20), nullable=False)
 class Onedaypredict(db.Model):
-    __tablename__='OnedayPredict'
+    __tablename__='Onedaypredict'
     id = db.Column(db.Integer, primary_key=True)
     stock_code = db.Column(db.String(20),db.ForeignKey('Predictstocks.stock_code',name='oneday_code'))
     price30min =db.Column(db.DECIMAL(precision=10,scale=2))
@@ -66,7 +66,7 @@ class Onedaypredict(db.Model):
     price390min =db.Column(db.DECIMAL(precision=10,scale=2))
     price420min =db.Column(db.DECIMAL(precision=10,scale=2))
 class Oneweekpredict(db.Model):
-    __tablename__='OneweekPredict'
+    __tablename__='Oneweekpredict'
     id = db.Column(db.Integer, primary_key=True)
     stock_code = db.Column(db.String(20),db.ForeignKey('Predictstocks.stock_code',name='oneweek_code'))
     price1day =db.Column(db.DECIMAL(precision=10,scale=2))
@@ -77,7 +77,7 @@ class Oneweekpredict(db.Model):
     price6day =db.Column(db.DECIMAL(precision=10,scale=2))
     price7day =db.Column(db.DECIMAL(precision=10,scale=2))
 class Onemonthpredict(db.Model):
-    __tablename__='OnemonthPredict'
+    __tablename__='Onemonthpredict'
     id = db.Column(db.Integer, primary_key=True)
     stock_code = db.Column(db.String(20),db.ForeignKey('Predictstocks.stock_code',name='onemonth_code'))
     price3day =db.Column(db.DECIMAL(precision=10,scale=2))
