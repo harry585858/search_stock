@@ -64,11 +64,38 @@
                     .catch(error => console.error('Error:', error));
                 }
             </script>
+            <h1>별점</h1>
+            {% for i in post %}
+            {{i.stock_code}}
+            {{i.rating}}
+            {{ i.content }}
+            {% endfor %}
             <form action="/stockdetail/rate/AAPL" method="POST" id="newpost">
                 <input type="text" name="rating" placeholder="별점">
                 <input type="text" name="content" placeholder="텍스트">
                 <input type="submit" name="" id="">
             </form>
+            <form action="/stockdetail/ratedelete/AAPL" method="POST" id="deletepost">
+                <input type="submit" value="Delete post">
+                <input type="hidden" name="_method" value="DELETE">  <!-- 숨은 필드로 DELETE 메서드를 전달 -->
+            </form>
+            <script>
+                document.getElementById("deletepost").onsubmit = function(event) {
+                event.preventDefault();  // 기본 폼 제출 방지
+
+                // fetch를 통해 POST 요청을 보내되, _method로 DELETE를 처리
+                fetch(this.action, {
+                    method: 'POST',  // 실제로는 POST로 폼을 보내지만
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'  // 폼 데이터를 전송하는 방식
+                    },
+                    body: new URLSearchParams(new FormData(this))  // 폼 데이터를 URL 쿼리 형식으로 변환
+                })
+                .then(response => response.json())  // 응답 처리
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+            }
+            </script>
         </div>
         <div id = "sidebar">
             {% if logined==True %}

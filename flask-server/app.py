@@ -207,7 +207,7 @@ def stockdetail_rate(stock_code):
         
 
 @app.route('/stockdetail/ratedelete/<string:stock_code>', methods=['DELETE'])
-def stockdetail_ratedelete():
+def stockdetail_ratedelete(stock_code):
     user_id = session.get('user_id')
     existing_rate = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
     if existing_rate:
@@ -249,10 +249,12 @@ def mypage():
 @app.route('/')
 def index():
     if 'logged_in' in session and session['logged_in']:
-        user = User.query.get(session.get('user_id'))
+        user_id = session.get('user_id')
+        user = User.query.get(user_id)
         favorites = user.favorites
+        post = rateItem.query.filter_by(user_id = user_id).all()
         session.permanent = True
-        return render_template('index.html', logined = True, favorites=favorites)
+        return render_template('index.html', logined = True, favorites=favorites, post=post)
 
     else:
         return render_template('index.html', logined = False)
