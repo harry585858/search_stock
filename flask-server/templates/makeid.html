@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <style>
+        @import "/static/css/makeid.css";
+    </style>
+</head>
+<body>
+    <div id="makeid">
+        <h1><a href="/">주식예측</a></h1>
+        <form action="/makeresult" method="post">
+            <input type="text" placeholder="아이디" name="id">
+            <input type="password" placeholder="비밀번호" name="pw">
+            <input type="email" placeholder="이메일" name="email">
+            <input type="submit"value="회원가입">
+        </form>
+    </div>
+</body>
+</html>

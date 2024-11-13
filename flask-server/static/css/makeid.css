@@ -1,0 +1,13 @@
+a{
+    color: black;
+    text-decoration: none;
+}
+form > input{
+    height: 60px;
+    border-radius: 8px 8px;
+    width: 100%;
+}
+#makeid{
+    width: 50%;
+    margin:auto;
+}
