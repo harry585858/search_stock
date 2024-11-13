@@ -1,3 +1,4 @@
+import React from "react";
 import { FC, ReactNode } from "react";
 import { Container, Root } from "./styled";
 

@@ -1,3 +1,4 @@
+import React from "react";
 import { Root } from "./styled";
 import { Header } from "../../../components/Header";
 

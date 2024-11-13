@@ -1,3 +1,4 @@
+import React from "react";
 import { Header } from "../../../components/Header";
 import { CommonSection } from "../../../components/CommonSection/CommonSection";
 import { Root } from "./styled";
