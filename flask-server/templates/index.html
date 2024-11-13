@@ -64,6 +64,11 @@
                     .catch(error => console.error('Error:', error));
                 }
             </script>
+            <form action="/stockdetail/rate/AAPL" method="POST" id="newpost">
+                <input type="text" name="rating" placeholder="별점">
+                <input type="text" name="content" placeholder="텍스트">
+                <input type="submit" name="" id="">
+            </form>
         </div>
         <div id = "sidebar">
             {% if logined==True %}

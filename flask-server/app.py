@@ -195,8 +195,8 @@ def stockdetail_favorite(stock_code):
 @app.route('/stockdetail/rate/<string:stock_code>', methods=['POST'])
 def stockdetail_rate(stock_code):
     user_id = session.get('user_id')
-    rating = request.form("rating")
-    content = request.form("content")
+    rating = request.form.get("rating")
+    content = request.form.get("content")
     existing_rate = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
     if not existing_rate:
         new_rate = rateItem(stock_code=stock_code, user_id=user_id, rating=rating,content=content)
