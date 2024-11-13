@@ -23,7 +23,7 @@
             {% for i in favorites %}
             {{ i.stock_code }}
             {% endfor %}
-            <form action="/stockdetail/favorite/abc" method="POST" id="new">
+            <form action="/stockdetail/favorite/AAPL" method="POST" id="new">
                 <input type="submit" name="" id="">
             </form>
             <script>
@@ -43,7 +43,7 @@
                     .catch(error => console.error('Error:', error));
                 }
             </script>
-            <form action="/stockdetail/favorite/abc" method="POST" id="delete-form">
+            <form action="/stockdetail/favorite/AAPL" method="POST" id="delete-form">
                 <input type="hidden" name="_method" value="DELETE">
                 <input type="submit" value="Delete">
             </form>

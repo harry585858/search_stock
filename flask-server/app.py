@@ -1,25 +1,24 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import hashlib
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import event, func
+from sqlalchemy import event, func, DECIMAL
 import os
 import requests
 from config import Config
 #https://github.com/harry585858/search_stock.git
 app = Flask(__name__)
-
 #내부 데이터베이스 URI 설정 (현재 디렉토리에 example.db 파일 생성)
-basedir = os.path.abspath(os.path.dirname(__file__))  # 현재 파일의 디렉토리 경로
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "example.db")}'
-app.config['SECRET_KEY'] = 'password'
+# basedir = os.path.abspath(os.path.dirname(__file__))  # 현재 파일의 디렉토리 경로
+# app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "example.db")}'
+# app.config['SECRET_KEY'] = 'password'
 
 # 외부 데이터베이스 설정
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://admin:비번%21@database-1.c5cys28ymsiz.ap-northeast-2.rds.amazonaws.com:3306/test'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://back:back1234@database-1.c5cys28ymsiz.ap-northeast-2.rds.amazonaws.com:3306/stockDB'
 
 #config
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-
+app.secret_key='비밀키'
 # 데이터베이스 모델 정의
 class User(db.Model):
     __tablename__ = 'Users'
@@ -43,7 +42,55 @@ class rateItem(db.Model):
     stock_code = db.Column(db.String(20), nullable=False)  # 즐겨찾기 항목 ID
     rating = db.Column(db.DECIMAL(precision=2,scale=1),nullable=False)
     content = db.Column(db.String(500),nullable=False)
-
+class Predictstocks(db.Model):
+    __tablename__='Predictstocks'
+    id = db.Column(db.Integer, primary_key=True)
+    stock_name = db.Column(db.String(20), nullable=False)
+    stock_code = db.Column(db.String(20), nullable=False)
+class Onedaypredict(db.Model):
+    __tablename__='OnedayPredict'
+    id = db.Column(db.Integer, primary_key=True)
+    stock_code = db.Column(db.String(20),db.ForeignKey('Predictstocks.stock_code',name='oneday_code'))
+    price30min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price60min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price90min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price120min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price150min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price180min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price210min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price240min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price270min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price300min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price330min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price360min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price390min =db.Column(db.DECIMAL(precision=10,scale=2))
+    price420min =db.Column(db.DECIMAL(precision=10,scale=2))
+class Oneweekpredict(db.Model):
+    __tablename__='OneweekPredict'
+    id = db.Column(db.Integer, primary_key=True)
+    stock_code = db.Column(db.String(20),db.ForeignKey('Predictstocks.stock_code',name='oneweek_code'))
+    price1day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price2day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price3day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price4day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price5day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price6day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price7day =db.Column(db.DECIMAL(precision=10,scale=2))
+class Onemonthpredict(db.Model):
+    __tablename__='OnemonthPredict'
+    id = db.Column(db.Integer, primary_key=True)
+    stock_code = db.Column(db.String(20),db.ForeignKey('Predictstocks.stock_code',name='onemonth_code'))
+    price3day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price6day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price9day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price12day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price15day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price18day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price21day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price24day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price27day =db.Column(db.DECIMAL(precision=10,scale=2))
+    price30day =db.Column(db.DECIMAL(precision=10,scale=2))
+  
 with app.app_context():
     db.create_all()
 
@@ -170,14 +217,14 @@ def stockdetail_ratedelete():
 @app.route('/makelogin', methods=['POST'])
 def makelogin():
     salt = 'HZaNK0en1n'
-    id = request.form['id']
+    user_id = request.form['id']
     pw = request.form['pw']
-    if not id or not pw:
+    if not user_id or not pw:
         return render_template('makelogin.html', success=False)
     pw = hashlib.sha512((pw + salt).encode()).hexdigest()
-    user = User.query.filter_by(user_id=id, user_password=pw).first()
+    user = User.query.filter_by(user_id=user_id, user_password=pw).first()
     if user:
-        session['user_id'] = id
+        session['user_id'] = user_id
         session['logged_in'] = True
         return render_template('makelogin.html', success=True)
     else:
