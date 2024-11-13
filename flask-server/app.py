@@ -155,12 +155,13 @@ def signup_check():
 
 @app.route('/stockdetail', methods=['POST'])
 def stockdetail():
-    stockname = request.form("stockname", none)
+    stock_code = request.form("stock_code", none)
     user_id = session.get('user_id')
-    existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stockname).first()
-    star = db.session.query(func.avg(rateItem.rating)).filter(rateItem.stock_code==stockname).scalar()
-    if star:
-        return jsonify({"평균평점": star, "즐겨찾기 여부": existing_favorite})
+    existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
+    avg_rate = db.session.query(func.avg(rateItem.rating)).filter(rateItem.stock_code==stock_code).scalar()
+    predict_day = Onedaypredict.query.filter_by(stock_code = stock_code).all()
+    if avg_rate:
+        return jsonify({"평균평점": avg_rate, "즐겨찾기 여부": existing_favorite, "예측데이터": predict_day})
     else:
         return jsonify({"error", "존재안함"})
 
@@ -192,11 +193,11 @@ def stockdetail_favorite(stock_code):
 @app.route('/stockdetail/rate/<string:stock_code>', methods=['POST'])
 def stockdetail_rate(stock_code):
     user_id = session.get('user_id')
-    star = request.form("star")
-    rate = request.form("rate")
+    rating = request.form("rating")
+    content = request.form("content")
     existing_rate = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
     if existing_rate:
-        new_rate = rateItem(id=id, user_id=user_id,stock_code=stock_code, star=star,rate=rate)
+        new_rate = rateItem(stock_code=stock_code, user_id=user_id,stock_code=stock_code, rating=rating,content=content)
         db.session.add(new_rate)
         db.session.commit()
         return jsonify({"message": "저장 완료"})
@@ -210,7 +211,7 @@ def stockdetail_ratedelete():
     if existing_rate:
         db.session.delete(existing_rate)
         db.session.commit()
-        return jsonify({"message": "Rate delete"})
+        return jsonify({"message": "Rate deleted"})
     else:
         return jsonify({"message": "없음"}), 404
 
