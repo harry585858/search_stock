@@ -4,15 +4,17 @@ import { CommonSection } from "../../components/CommonSection/CommonSection";
 import { Header } from "../../components/Header";
 import { Root, StockList } from "./styled";
 
+axios.defaults.baseURL = "http://127.0.0.1:8000";
+
 export const MainPage = () => {
   const [stockData, setStockData] = useState<any>(null); // 상태 타입을 any로 설정
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<any>(null); // 에러 타입을 any로 설정
-
+  //9개 정도
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/test"); // Flask API 호출
+        const response = await axios.get("/test"); // Flask API 호출
         setStockData(response.data); // 데이터를 상태에 저장
         setLoading(false); // 로딩 완료
       } catch (err: any) {

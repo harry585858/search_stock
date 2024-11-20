@@ -114,6 +114,16 @@ def logout():
     session.pop('user_id', None)
     session.pop('logged_in',None)
     return redirect(url_for('login'))
+
+@app.route('/test')
+def test():
+    #list ={
+    #    {'id':1, 'name':'prj01','currentPrice':10000},{'id':2, 'name':'prj02','currentPrice':20000}
+    #}
+
+    list = {'message':'test'}
+    return jsonify(list)
+
 if __name__=='__main__':
     with sqlite3.connect("database.db") as connection:
         cur = connection.cursor()
@@ -121,12 +131,4 @@ if __name__=='__main__':
         connection.commit()
     app.run(debug=True, port=8000)
 
-    @app.route('/test')
-    def test():
-        #list ={
-        #    {'id':1, 'name':'prj01','currentPrice':10000},{'id':2, 'name':'prj02','currentPrice':20000}
-        #}
-        #return jsonify(list)
-
-        list = {'message':'test'}
-        return jsonify(list)
+    
