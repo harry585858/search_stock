@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask_mail import Mail,Message
 import hashlib
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event, func, DECIMAL
@@ -6,8 +7,11 @@ import os
 import requests
 from config import Config
 from datetime import timedelta
+import random
+from flask_cors import CORS
 #https://github.com/harry585858/search_stock.git
 app = Flask(__name__)
+CORS(app, origins=["http://localhost:3000"])
 #내부 데이터베이스 URI 설정 (현재 디렉토리에 example.db 파일 생성)
 # basedir = os.path.abspath(os.path.dirname(__file__))  # 현재 파일의 디렉토리 경로
 # app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "example.db")}'
@@ -15,12 +19,23 @@ app = Flask(__name__)
 
 # 외부 데이터베이스 설정
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://back:back1234@database-1.c5cys28ymsiz.ap-northeast-2.rds.amazonaws.com:3306/stockDB'
-
 #config
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  # Gmail SMTP 서버
+app.config['MAIL_PORT'] = 587  # 포트 번호 (TLS 사용)
+app.config['MAIL_USE_TLS'] = True  # TLS 암호화 사용
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'swengineeringtest@gmail.com'  # 이메일 주소
+app.config['MAIL_PASSWORD'] = 'wmuoaapdwedxuiyu'  # 이메일 비밀번호
+app.config['MAIL_DEFAULT_SENDER'] = 'swengineeringtest@gmail.com'  # 기본 발신자 이메일
+
+mail = Mail(app)  # Mail 객체 초기화
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 app.secret_key='비밀키'
 app.permanent_session_lifetime = timedelta(minutes=30)
+homeport = '3000'
+homeurl = 'http'+'://127.0.0.1:'+homeport
 # 데이터베이스 모델 정의
 class User(db.Model):
     __tablename__ = 'Users'
@@ -95,7 +110,23 @@ class Onemonthpredict(db.Model):
   
 with app.app_context():
     db.create_all()
-
+@app.route('/verify')
+def verify():
+    if 'logged_in' in session and session['logged_in']:
+        user_id = session.get('user_id')
+        user = User.query.get(user_id)
+        favorites = user.favorites
+        email_address = user.user_email
+    else: return f"login first: {e}"
+    try:
+        msg = Message('주식예측 인증메일입니다.', recipients=[email_address])  # 수신자 이메일 설정
+        verify_code = random.randint(0,0xFFFFFF)
+        msg.body = '인증메일'+hex(verify_code);  # 본문 내용
+        mail.send(msg)  # 이메일 보내기
+        session['verify_code']=verify_code
+    except Exception as e:
+        return f"Error sending email: {e}"
+    redirect(homeurl)
 # 네이버 로그인 요청
 @app.route('/naver/login')
 def naver_login():
@@ -229,14 +260,15 @@ def makelogin():
     if user:
         session['user_id'] = user_id
         session['logged_in'] = True
-        return render_template('makelogin.html', success=True)
+        #return render_template('makelogin.html', success=True)
+        return redirect(homeurl)
     else:
         return render_template('makelogin.html', success=False)
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
     session.pop('logged_in', None)
-    return redirect(url_for('login'))
+    return redirect(homeurl)
 @app.route('/mypage', methods=['POST'])
 def mypage():
     user_id = session.get('user_id')
@@ -263,7 +295,11 @@ def login():
     return render_template('login.html')
 @app.route('/makeid')
 def makeid():
-    return render_template('makeid.html')
+    return render_template('makeid.html')   
+@app.route('/test')
+def test():
+    list = {'message':'test'}
+    return jsonify(list)
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
