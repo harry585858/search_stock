@@ -118,3 +118,7 @@ if __name__=='__main__':
         cur.execute("CREATE TABLE IF NOT EXISTS user_data (id TEXT, pw TEXT, email TEXT)")
         connection.commit()
     app.run(debug=True)
+
+    @app.route('/test')
+    def test():
+        return {"list":[{"id":1, "name": "prj01"}, {"id":2, "name":"prj02"}]}
