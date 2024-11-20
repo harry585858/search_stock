@@ -117,8 +117,14 @@ if __name__=='__main__':
         cur = connection.cursor()
         cur.execute("CREATE TABLE IF NOT EXISTS user_data (id TEXT, pw TEXT, email TEXT)")
         connection.commit()
-    app.run(debug=True)
+    app.run(debug=True, port=8000)
 
     @app.route('/test')
     def test():
-        return {"list":[{"id":1, "name": "prj01"}, {"id":2, "name":"prj02"}]}
+        #list ={
+        #    {'id':1, 'name':'prj01','currentPrice':10000},{'id':2, 'name':'prj02','currentPrice':20000}
+        #}
+        #return jsonify(list)
+
+        list = {'message':'test'}
+        return jsonify(list)
