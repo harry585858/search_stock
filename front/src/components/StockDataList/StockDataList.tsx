@@ -1,8 +1,9 @@
 import React from "react";
 
 export type stockDataType = {
-  id: number;
-  name: string;
+  id: string;
+  stock_name: string;
+  stock_code: string;
   currentPrice?: number;
   volume?: number;
   changedPrice?: number;
