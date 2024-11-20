@@ -2,12 +2,14 @@ from flask import Flask, render_template, request, redirect,request,url_for, ses
 import numpy as np
 import json
 from config import Config
+from flask_cors import CORS
 import requests
 import hashlib
 import sqlite3
 #db
 
 app=Flask(__name__)
+CORS(app)
 app.config['SECRET_KEY']='password'
 # 네이버 로그인 요청
 @app.route('/naver/login')
