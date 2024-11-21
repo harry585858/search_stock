@@ -25,7 +25,7 @@ app.config['MAIL_PORT'] = 587  # 포트 번호 (TLS 사용)
 app.config['MAIL_USE_TLS'] = True  # TLS 암호화 사용
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = 'swengineeringtest@gmail.com'  # 이메일 주소
-app.config['MAIL_PASSWORD'] = 'wmuoaapdwedxuiyu'  # 이메일 비밀번호
+app.config['MAIL_PASSWORD'] = ''  # 이메일 비밀번호
 app.config['MAIL_DEFAULT_SENDER'] = 'swengineeringtest@gmail.com'  # 기본 발신자 이메일
 
 mail = Mail(app)  # Mail 객체 초기화
