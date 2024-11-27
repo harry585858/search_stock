@@ -1,7 +1,7 @@
-import React from "react";
-import { FC } from "react";
+import React, { FC } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import person from "../../assets/images/person.png";
 
 type HeaderProps = {
   showLogo?: true;
@@ -15,8 +15,12 @@ export const Header: FC<HeaderProps> = ({ showLogo }) => {
       </StyledLink>
       <StyledLink to="/Stock/Details">Predict</StyledLink>
       <StyledLink to="/Stock/Compare">Compare</StyledLink>
-      <StyledLink to="/User/SignInPage">LogIn</StyledLink>
-      <StyledLink to="/User/MyPage">MyPage</StyledLink>
+      <StyledLink to="/User/SignInPage">
+        <LoginButton>LogIn</LoginButton>
+      </StyledLink>
+      <StyledLink to="/User/MyPage">
+        <img id="user_icon" src={person} />
+      </StyledLink>
     </Root>
   );
 };
@@ -28,10 +32,23 @@ const Root = styled.header`
   position: fixed;
   top: 0;
   gap: 20px;
+
+  padding-top: 20px;
+  padding-bottom: 10px;
+
+  font-family: OpenSansTTF;
   border-bottom: 1px solid #8c86a8;
 
   .logo {
     display: inline;
+    font-family: BigShotOneTTF;
+    font-size: 36px;
+    color: #3410d6;
+  }
+
+  #user_icon {
+    width: 28px;
+    height: 28px;
   }
 `;
 
@@ -42,4 +59,20 @@ const StyledLink = styled(Link)`
   &:visited {
     color: inherit;
   }
+`;
+
+const LoginButton = styled.button`
+  width: 72px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #3410d6;
+  border: none;
+  border-radius: 10px;
+
+  font-family: NotoSansTTF;
+  font-weight: bold;
+  color: #fcfbff;
 `;
