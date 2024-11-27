@@ -9,6 +9,27 @@ from config import Config
 from datetime import timedelta
 import random
 from flask_cors import CORS
+
+###
+import yfinance as yf
+tickers_list = ['AAPL', 'INTC', 'AMZN', 'META', 'NFLX', 'NVDA', 'TSLA']
+stock_name = ['Apple', 'Intel', 'Amazon', 'Meta', 'Netflix', 'NVIDIA', 'Tesla']
+data = yf.download(tickers_list, period="1mo", interval="1d")
+modified_Data=[]
+modified_Data = []
+for time, frame in data.iterrows():
+    for ticker in tickers_list:
+        modified_Data.append({
+            "Datetime": time.strftime('%Y-%m-%d %H:%M'),
+            "Ticker": ticker,
+            "Name": stock_name[tickers_list.index(ticker)],
+            "Open": frame[('Open', ticker)],
+            "High": frame[('High', ticker)],
+            "Low": frame[('Low', ticker)],
+            "Close": frame[('Close', ticker)],
+            "AdjClose": frame[('Adj Close', ticker)],
+            "Volume": frame[('Volume', ticker)],
+        })
 #https://github.com/harry585858/search_stock.git
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"])
@@ -326,5 +347,18 @@ def login():
 @app.route('/makeid')
 def makeid():
     return render_template('makeid.html')   
+@app.route('/api', methods=['GET'])
+def api():
+    # 요청에서 ticker 파라미터 추출
+    ticker = request.args.get('ticker')
+    
+    if ticker:  # 특정 티커에 대한 데이터 필터링
+        filtered_data = [
+            item for item in modified_Data if item['Ticker'] == ticker
+        ]
+        return jsonify(filtered_data)
+    
+    # 티커가 없으면 전체 데이터 반환
+    return jsonify(modified_Data)
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { GlobalStyle } from "./global";
 import "./global.css";
 import { MainPage } from "./pages/Main/MainPage";
 import { ComparePage } from "./pages/Main/Compare";
@@ -13,6 +14,7 @@ const root = ReactDOM.createRoot(document.getElementById("root") as any);
 
 root.render(
   <React.StrictMode>
+    <GlobalStyle />
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<MainPage />} />
