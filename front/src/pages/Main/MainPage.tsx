@@ -36,7 +36,7 @@ export const MainPage = () => {
       {stockData && (
         <CommonSection>
           {/* stockData.message가 있다고 가정하고 이를 출력 */}
-          <div>{stockData.message}</div>
+          <div></div>
         </CommonSection>
       )}
     </Root>
