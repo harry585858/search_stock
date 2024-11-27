@@ -6,6 +6,8 @@ from flask_cors import CORS
 import requests
 import hashlib
 import sqlite3
+import yfinance as yf
+import pandas as pd
 #db
 
 app=Flask(__name__)
@@ -115,14 +117,29 @@ def logout():
     session.pop('logged_in',None)
     return redirect(url_for('login'))
 
-@app.route('/test')
-def test():
-    #list ={
-    #    {'id':1, 'name':'prj01','currentPrice':10000},{'id':2, 'name':'prj02','currentPrice':20000}
-    #}
+@app.route('/api', methods=['GET'])
+def api():
+    tickers_list=['AAPL','INTC','AMZN','META','NFLX','NVDA','TSLA']
+    stock_name=['Apple','Intel','Amazon','Meta','Netflix','NVIDIA','Tesla']
+    
+    data=yf.download(tickers_list,period="1mo", interval="1d")
 
-    list = {'message':'test'}
-    return jsonify(list)
+    modified_Data=[]
+    for time, frame in data.iterrows():
+        for ticker in tickers_list:
+            modified_Data.append({
+                "Datetime": time.strftime('%Y-%m-%d %H:%M'),
+                "Ticker": ticker,
+                "Name": stock_name[tickers_list.index(ticker)],
+                "Open": frame[('Open', ticker)],
+                "High": frame[('High', ticker)],
+                "Low": frame[('Low', ticker)],
+                "Close": frame[('Close', ticker)],
+                "AdjClose": frame[('Adj Close', ticker)],
+                "Volume": frame[('Volume', ticker)],
+            })
+    
+    return jsonify(modified_Data)
 
 if __name__=='__main__':
     with sqlite3.connect("database.db") as connection:
