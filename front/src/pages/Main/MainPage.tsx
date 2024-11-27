@@ -17,6 +17,7 @@ export const MainPage: FC = () => {
         const response = await axios.get<stockDataProps[]>("/api");
         setStockData(response.data);
         setLoading(false);
+        console.log(stockData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {

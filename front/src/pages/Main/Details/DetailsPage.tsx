@@ -8,7 +8,6 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  TooltipProps,
 } from "recharts";
 import axios from "axios";
 import { CommonSection } from "../../../components/CommonSection/CommonSection";
@@ -28,7 +27,7 @@ const useStockData = (ticker: string) => {
     const fetchData = async () => {
       try {
         const response = await axios.get<stockDataProps[]>(
-          "/api?ticker=${ticker}"
+          `/api?ticker=${ticker}`
         );
         setData(response.data);
       } catch (error) {
@@ -65,7 +64,7 @@ const StockChart: FC<StockChartProps> = ({ ticker }) => {
         <Legend />
         <Line
           type="monotone"
-          dataKey={"Close"}
+          dataKey={"AdjClose"}
           stroke="#3410d6"
           activeDot={{ r: 8 }}
         />

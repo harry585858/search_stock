@@ -128,7 +128,7 @@ def api():
     for time, frame in data.iterrows():
         for ticker in tickers_list:
             modified_Data.append({
-                "Datetime": time.strftime('%Y-%m-%d %H:%M'),
+                "Datetime": time.strftime('%Y-%m-%d'),
                 "Ticker": ticker,
                 "Name": stock_name[tickers_list.index(ticker)],
                 "Open": frame[('Open', ticker)],
