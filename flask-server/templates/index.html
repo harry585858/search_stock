@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주식예측</title>
+    <style>
+        @import "/static/css/index.css";
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script>
+
+    </script>
+</head>
+<body>
+    <div id="header">
+        <h1>주식예측</h1>
+    </div>
+    <div id="container">
+        <div id = "section">
+            <p>{{datas}}</p>
+            <p>즐겨찾기</p>
+            {% for i in favorites %}
+            {{ i.stock_code }}
+            {% endfor %}
+            <form action="/stockdetail/favorite/AAPL" method="POST" id="new">
+                <input type="submit" name="" id="">
+            </form>
+            <script>
+                document.getElementById("new").onsubmit = function(event) {
+                    event.preventDefault();  // 기본 폼 제출 방지
+                    fetch(this.action, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            // 필요한 데이터 추가 (예: item_id 등)
+                        })
+                    })
+                    .then(response => response.json())  // 응답 처리
+                    .then(data => console.log(data))
+                    .catch(error => console.error('Error:', error));
+                }
+            </script>
+            <form action="/stockdetail/favorite/AAPL" method="POST" id="delete-form">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="submit" value="Delete">
+            </form>
+            <script>
+                document.getElementById("delete-form").onsubmit = function(event) {
+                    event.preventDefault();  // 기본 폼 제출 방지
+                    fetch(this.action, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            // 필요한 데이터 추가 (예: item_id 등)
+                        })
+                    })
+                    .then(response => response.json())  // 응답 처리
+                    .then(data => console.log(data))
+                    .catch(error => console.error('Error:', error));
+                }
+            </script>
+            <h1>별점</h1>
+            {% for i in post %}
+            {{i.stock_code}}
+            {{i.rating}}
+            {{ i.content }}
+            {% endfor %}
+            <form action="/stockdetail/rate/AAPL" method="POST" id="newpost">
+                <input type="text" name="rating" placeholder="별점">
+                <input type="text" name="content" placeholder="텍스트">
+                <input type="submit" name="" id="">
+            </form>
+            <form action="/stockdetail/ratedelete/AAPL" method="POST" id="deletepost">
+                <input type="submit" value="Delete post">
+                <input type="hidden" name="_method" value="DELETE">  <!-- 숨은 필드로 DELETE 메서드를 전달 -->
+            </form>
+            <script>
+                document.getElementById("deletepost").onsubmit = function(event) {
+                event.preventDefault();  // 기본 폼 제출 방지
+
+                // fetch를 통해 POST 요청을 보내되, _method로 DELETE를 처리
+                fetch(this.action, {
+                    method: 'POST',  // 실제로는 POST로 폼을 보내지만
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'  // 폼 데이터를 전송하는 방식
+                    },
+                    body: new URLSearchParams(new FormData(this))  // 폼 데이터를 URL 쿼리 형식으로 변환
+                })
+                .then(response => response.json())  // 응답 처리
+                .then(data => console.log(data))
+                .catch(error => console.error('Error:', error));
+            }
+            </script>
+        </div>
+        <div id = "sidebar">
+            {% if logined==True %}
+            <a href="/logout"> 로그아웃</a>
+            {%else%}
+            <a href="/login"> 로그인</a>
+            {%endif%}
+            <form action="/search" method="POST">
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
+                <datalist id="suggestions">
+                    <option value="BTC">비트코인</option>
+                    <option value="ETH">이더리움</option>
+                    <option value="DOGE">도지</option>
+                    <option value="AMZN">에이다</option>
+                    <option value="SOL">솔라나</option>
+                    <option value="SHIB">시바</option>
+                </datalist>
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">            
+                <input type="text" list="suggestions" name="nameOfStock[]" placeholder="종목코드 입력">            
+                <input type="submit" value="검색">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

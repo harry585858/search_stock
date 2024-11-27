@@ -18,6 +18,8 @@ export const Header: FC<HeaderProps> = ({ showLogo }) => {
       <StyledLink to="/User/SignInPage">
         <LoginButton>LogIn</LoginButton>
       </StyledLink>
+      <StyledLink to="/naver/login">naver Login</StyledLink>
+      <StyledLink to="/verify">비밀번호 변경</StyledLink>
       <StyledLink to="/User/MyPage">
         <img id="user_icon" src={person} />
       </StyledLink>

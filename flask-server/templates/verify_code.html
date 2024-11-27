@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>인증 코드 확인</title>
+</head>
+<body>
+    <h1>인증 코드 확인</h1>
+    <form action="/verify_code" method="POST">
+        <label for="email">이메일:</label>
+        <input type="email" name="email" id="email" required>
+        <br><br>
+        <label for="code">인증 코드:</label>
+        <input type="text" name="code" id="code" required>
+        <br><br>
+        <label for="code">새 비밀번호:</label>
+        <input type="password" name="pw" id="pw" required>
+        <button type="submit">코드 확인</button>
+    </form>
+</body>
+</html>
