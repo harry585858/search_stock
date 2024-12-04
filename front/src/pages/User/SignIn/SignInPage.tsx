@@ -18,6 +18,8 @@ export const SignInPage = () => {
             <input name="id" type="text" placeholder="ID 입력..." />
             <input name="pw" type="password" placeholder="PW 입력..." />
             <input type="submit" value="Login" />
+
+            <a href="http://localhost:8000/verify">naver Login</a>
           </form>
         </header>
       </div>
