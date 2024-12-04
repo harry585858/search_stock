@@ -4,6 +4,7 @@ import { CommonSection } from "../../components/CommonSection/CommonSection";
 import { Header } from "../../components/Header";
 import { stockDataProps } from "../../components/StockDataProps/StockDataProps";
 import { Root, StockList } from "./styled";
+import { useScrollEvent } from "../../components/useScrollEvent";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000";
 

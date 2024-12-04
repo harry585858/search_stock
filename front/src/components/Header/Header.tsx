@@ -10,19 +10,22 @@ type HeaderProps = {
 export const Header: FC<HeaderProps> = ({ showLogo }) => {
   return (
     <Root>
-      <StyledLink to="/">
-        {showLogo && <h1 className="logo">STOCK AI</h1>}
-      </StyledLink>
-      <StyledLink to="/Stock/Details">Predict</StyledLink>
-      <StyledLink to="/Stock/Compare">Compare</StyledLink>
-      <StyledLink to="/User/SignInPage">
-        <LoginButton>LogIn</LoginButton>
-      </StyledLink>
-      <StyledLink to="/naver/login">naver Login</StyledLink>
-      <StyledLink to="/verify">비밀번호 변경</StyledLink>
-      <StyledLink to="/User/MyPage">
-        <img id="user_icon" src={person} />
-      </StyledLink>
+      <HeaderSectionLeft>
+        <StyledLink to="/">
+          {showLogo && <h1 className="logo">STOCK AI</h1>}
+        </StyledLink>
+        <StyledLink to="/Stock/Details">Details</StyledLink>
+        <StyledLink to="/Stock/Compare">Compare</StyledLink>
+      </HeaderSectionLeft>
+
+      <HeaderSectionRight>
+        <StyledLink to="/User/SignInPage">
+          <LoginButton>LOGIN</LoginButton>
+        </StyledLink>
+        <StyledLink to="/User/MyPage">
+          <img id="user_icon" src={person} />
+        </StyledLink>
+      </HeaderSectionRight>
     </Root>
   );
 };
@@ -30,16 +33,17 @@ export const Header: FC<HeaderProps> = ({ showLogo }) => {
 const Root = styled.header`
   width: 95%;
   display: flex;
+  justify-content: space-between;
   align-items: baseline;
   position: fixed;
   top: 0;
-  gap: 20px;
+  z-index: 5;
 
-  padding-top: 20px;
-  padding-bottom: 10px;
+  padding: 20px 10px 5px;
 
   font-family: OpenSansTTF;
   border-bottom: 1px solid #8c86a8;
+  background-color: #ffffff;
 
   .logo {
     display: inline;
@@ -52,6 +56,18 @@ const Root = styled.header`
     width: 28px;
     height: 28px;
   }
+`;
+
+const HeaderSectionLeft = styled.div`
+  display: flex;
+  align-items: baseline;
+  gap: 40px;
+`;
+
+const HeaderSectionRight = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 20px;
 `;
 
 const StyledLink = styled(Link)`
@@ -76,5 +92,6 @@ const LoginButton = styled.button`
 
   font-family: NotoSansTTF;
   font-weight: bold;
+  font-size: 12px;
   color: #fcfbff;
 `;

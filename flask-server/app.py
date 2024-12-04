@@ -14,7 +14,6 @@ import yfinance as yf
 tickers_list = ['AAPL', 'INTC', 'AMZN', 'META', 'MSFT', 'NVDA', 'TSLA','LOGI','DIS']
 stock_name = ['Apple', 'Intel', 'Amazon', 'Meta', 'Microsoft', 'NVIDIA', 'Tesla','Logitech','Disney']
 data = yf.download(tickers_list, period="1mo", interval="1d")
-modified_Data=[]
 modified_Data = []
 for time, frame in data.iterrows():
     for ticker in tickers_list:
@@ -109,6 +108,26 @@ class Onedaypredict(db.Model):
     price390min =db.Column(db.DECIMAL(precision=10,scale=2))
     price420min =db.Column(db.DECIMAL(precision=10,scale=2))
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "stock_code": self.stock_code,
+            "price030min": float(self.price30min) if self.price30min else None,
+            "price060min": float(self.price60min) if self.price60min else None,
+            "price090min": float(self.price90min) if self.price90min else None,
+            "price120min": float(self.price120min) if self.price120min else None,
+            "price150min": float(self.price150min) if self.price150min else None,
+            "price180min": float(self.price180min) if self.price180min else None,
+            "price210min": float(self.price210min) if self.price210min else None,
+            "price240min": float(self.price240min) if self.price240min else None,
+            "price270min": float(self.price270min) if self.price270min else None,
+            "price300min": float(self.price300min) if self.price300min else None,
+            "price330min": float(self.price330min) if self.price330min else None,
+            "price360min": float(self.price360min) if self.price360min else None,
+            "price390min": float(self.price390min) if self.price390min else None,
+            "price420min": float(self.price420min) if self.price420min else None,
+        }
+
 class Oneweekpredict(db.Model):
     __tablename__='Oneweekpredict'
     id = db.Column(db.Integer, primary_key=True)
@@ -120,6 +139,19 @@ class Oneweekpredict(db.Model):
     price5day =db.Column(db.DECIMAL(precision=10,scale=2))
     price6day =db.Column(db.DECIMAL(precision=10,scale=2))
     price7day =db.Column(db.DECIMAL(precision=10,scale=2))
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "stock_code": self.stock_code,
+            "price1day": float(self.price1day) if self.price1day else None,
+            "price2day": float(self.price2day) if self.price2day else None,
+            "price3day": float(self.price3day) if self.price3day else None,
+            "price4day": float(self.price4day) if self.price4day else None,
+            "price5day": float(self.price5day) if self.price5day else None,
+            "price6day": float(self.price6day) if self.price6day else None,
+            "price7day": float(self.price7day) if self.price7day else None,
+        }
 
 class Onemonthpredict(db.Model):
     __tablename__='Onemonthpredict'
@@ -135,6 +167,22 @@ class Onemonthpredict(db.Model):
     price24day =db.Column(db.DECIMAL(precision=10,scale=2))
     price27day =db.Column(db.DECIMAL(precision=10,scale=2))
     price30day =db.Column(db.DECIMAL(precision=10,scale=2))
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "stock_code": self.stock_code,
+            "price03day": float(self.price3day) if self.price3day else None,
+            "price06day": float(self.price6day) if self.price6day else None,
+            "price09day": float(self.price9day) if self.price9day else None,
+            "price12day": float(self.price12day) if self.price12day else None,
+            "price15day": float(self.price15day) if self.price15day else None,
+            "price18day": float(self.price18day) if self.price18day else None,
+            "price21day": float(self.price21day) if self.price21day else None,
+            "price24day": float(self.price24day) if self.price24day else None,
+            "price27day": float(self.price27day) if self.price27day else None,
+            "price30day": float(self.price30day) if self.price30day else None,
+        }
   
 with app.app_context():
     db.create_all()
@@ -252,23 +300,33 @@ def signup_check():
     return jsonify({"success": "0"})
 
 @app.route('/stockdetail/<string:interval>', methods=['POST'])
-def stockdetail():
-    stock_code = request.form("stock_code", none)
+def stockdetail(interval):
+    request_data = request.get_json()
+    stock_code = request_data.get("stock_code", None)
+
+    if not stock_code:
+        return jsonify ({"error": "Invalid ticker"}), 400
+
     user_id = session.get('user_id')
     existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
     avg_rate = db.session.query(func.avg(rateItem.rating)).filter(rateItem.stock_code==stock_code).scalar()
     
     if interval == "week":
-        predict_data = Oneweekpredict.query.filter_by(stock_code = stock_code).all()
+        predict_data = [data.to_dict() for data in Oneweekpredict.query.filter_by(stock_code = stock_code).all()]
     elif interval == "month":
-        predict_data = Onemonthpredict.query.filter_by(stock_code = stock_code).all()
+        predict_data = [data.to_dict() for data in Onemonthpredict.query.filter_by(stock_code = stock_code).all()]
     else:
-        predict_data = Onedaypredict.query.filter_by(stock_code = stock_code).all()
+        predict_data = [data.to_dict() for data in Onedaypredict.query.filter_by(stock_code = stock_code).all()]
     
-    if avg_rate:
-        return jsonify({"평균평점": avg_rate, "즐겨찾기 여부": existing_favorite, "예측데이터": predict_data})
+    if existing_favorite:
+        favorite_status = True
     else:
-        return jsonify({"error", "오류"})
+        favorite_status = False
+
+    if avg_rate:
+        return jsonify({"평균평점": avg_rate, "즐겨찾기 여부": favorite_status, "예측데이터": predict_data})
+    else:
+        return jsonify({"error": "오류"}), 400
 
 @app.route('/stockdetail/favorite/<string:stock_code>', methods=['POST', 'DELETE'])
 def stockdetail_favorite(stock_code):
@@ -393,6 +451,12 @@ def api():
     
     # 티커가 없으면 전체 데이터 반환
     return jsonify(modified_Data)
+
+@app.route('/api/predict',methods=['GET'])
+def predict():
+    ticker=request.args.get('ticker')
+
+    return jsonify(Predictstocks)
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
