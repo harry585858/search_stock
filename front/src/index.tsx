@@ -21,7 +21,7 @@ root.render(
         <Route path="/User/MyPage" element={<MyPage />} />
         <Route path="/User/SignInPage" element={<SignInPage />} />
         <Route path="/User/SignUpPage" element={<SignUpPage />} />
-        <Route path="/Stock/Details" element={<DetailsPage />} />
+        <Route path="/Stock/Details" element={<DetailsPage ticker="AAPL" />} />
         <Route path="/Stock/Compare" element={<ComparePage />} />
       </Routes>
     </BrowserRouter>

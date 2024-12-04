@@ -1,7 +1,10 @@
-body {
+html,
+body,
+#root {
   display: flex;
   flex-direction: column;
   margin: 0;
+  overflow-y: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

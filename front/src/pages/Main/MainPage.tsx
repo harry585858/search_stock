@@ -4,6 +4,7 @@ import { CommonSection } from "../../components/CommonSection/CommonSection";
 import { Header } from "../../components/Header";
 import { stockDataProps } from "../../components/StockDataProps/StockDataProps";
 import { Root, StockList } from "./styled";
+import { useScrollEvent } from "../../components/useScrollEvent";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000";
 
@@ -17,6 +18,7 @@ export const MainPage: FC = () => {
         const response = await axios.get<stockDataProps[]>("/api");
         setStockData(response.data);
         setLoading(false);
+        console.log(stockData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
