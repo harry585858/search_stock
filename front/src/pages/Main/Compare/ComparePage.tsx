@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import { CommonSection } from "../../../components/CommonSection/CommonSection";
 import { Header } from "../../../components/Header";
 import { Root, SearchBar, SubmitIcon, SearchSection } from "./styled";
@@ -9,37 +9,38 @@ import {
   usePredictData,
 } from "../../../components/usePredictData";
 
-const usegetVaried = (ticker: string): number | null => {
+const useGetVaried = (ticker: string): number | null => {
   const stockData = useStockData(ticker).dataDetails;
+  const predictData = usePredictData(ticker).predictDetails;
 
-  if (!stockData || stockData.length === 0) return null;
+  useEffect(() => {
+    console.log("현재 데이터:", stockData);
+    console.log("예측 데이터:", predictData);
+  }, [stockData, predictData]);
+
+  if (
+    !ticker ||
+    !stockData ||
+    stockData.length === 0 ||
+    !predictData?.예측데이터
+  )
+    return null;
 
   const currentData = stockData[stockData.length - 1]?.Close;
   if (!currentData) return null;
-  console.log(currentData);
-
-  const predictData = usePredictData(ticker).predictDetails;
-
-  if (!predictData?.예측데이터) return null;
 
   const predictDataMdf = transformPredictData(predictData.예측데이터);
   const lastPrediction = predictDataMdf[predictDataMdf.length - 1];
-
-  console.log(currentData);
-  console.log(lastPrediction.value);
 
   return lastPrediction.value - currentData;
 };
 
 export const ComparePage = () => {
   const [search, setSearch] = useState("");
-  const [difference, setDifference] = useState<number | null>(null);
+  const [difference, setDifference] = useState();
 
   const handleSearch = () => {
-    if (search) {
-      const result = usegetVaried(search);
-      setDifference(result);
-    }
+    setDifference(useGetVaried(search));
   };
 
   return (
