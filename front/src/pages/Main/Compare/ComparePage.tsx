@@ -9,7 +9,7 @@ import {
   usePredictData,
 } from "../../../components/usePredictData";
 
-const UseGetVaried = (ticker: string): number | null => {
+const UseGetVaried = (ticker: string) => {
   const stockData = useStockData(ticker).dataDetails;
   const predictData = usePredictData(ticker).predictDetails;
 
@@ -25,20 +25,26 @@ const UseGetVaried = (ticker: string): number | null => {
   if (!currentData) return null;
 
   const predictDataMdf = transformPredictData(predictData.예측데이터);
-  const lastPrediction = predictDataMdf[predictDataMdf.length - 1];
+  const lastPrediction = predictDataMdf[predictDataMdf.length - 1].value;
+  const changed = lastPrediction - currentData;
 
-  return lastPrediction.value - currentData;
+  return { lastPrediction, currentData, changed };
 };
 
 export const ComparePage = () => {
   const [search, setSearch] = useState<string>("");
   const [difference, setDifference] = useState<number | null>();
 
-  const variedDifference = UseGetVaried(search);
+  const variedData = UseGetVaried(search);
+  const { lastPrediction, currentData, changed } = variedData || {};
 
   useEffect(() => {
-    setDifference(variedDifference);
-  }, [variedDifference]);
+    if (variedData) {
+      setDifference(variedData.changed);
+    } else {
+      setDifference(null);
+    }
+  }, [variedData]);
 
   const handleSearch = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -66,7 +72,11 @@ export const ComparePage = () => {
         </SearchBar>
 
         {difference !== null && (
-          <div>Predicted Change : {difference?.toFixed(2)}</div>
+          <>
+            <div>Predict Data : {lastPrediction}</div>
+            <div>Current Data : {currentData?.toFixed(2)}</div>
+            <div>Predicted Change : {difference?.toFixed(2)}</div>
+          </>
         )}
       </CommonSection>
     </Root>
