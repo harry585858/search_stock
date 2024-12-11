@@ -3,7 +3,7 @@ import axios from "axios";
 import { CommonSection } from "../../components/CommonSection/CommonSection";
 import { Header } from "../../components/Header";
 import { useStockData } from "../../components/useStockData";
-import { MainSection, Root, StockList } from "./styled";
+import { MainSection, Root, StockList, P, H3, DIV1 } from "./styled";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000";
 
@@ -27,10 +27,15 @@ export const MainPage: FC = () => {
       <Header showLogo={true} />
       <CommonSection>
         <MainSection>
-          Ticker AdjClose Volume
+          <DIV1>
+            <H3>종목이름</H3>
+            <H3>현재가격</H3>
+            <H3>24H 거래량</H3>
+          </DIV1>
           {summary.map((stock, index) => (
             <StockList key={index}>
-              {stock.Name} ${stock.AdjClose?.toFixed(2)} {stock.Volume}
+              <P>{stock.Name}</P> <P>${stock.AdjClose?.toFixed(2)}</P>{" "}
+              <P>{stock.Volume}</P>
             </StockList>
           ))}
         </MainSection>

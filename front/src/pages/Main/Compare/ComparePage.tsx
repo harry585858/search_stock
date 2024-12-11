@@ -9,7 +9,7 @@ import {
   usePredictData,
 } from "../../../components/usePredictData";
 
-const UseGetVaried = (ticker: string) => {
+const useGetVaried = (ticker: string) => {
   const stockData = useStockData(ticker).dataDetails;
   const predictData = usePredictData(ticker).predictDetails;
 
@@ -35,12 +35,12 @@ export const ComparePage = () => {
   const [search, setSearch] = useState<string>("");
   const [difference, setDifference] = useState<number | null>();
 
-  const variedData = UseGetVaried(search);
+  const variedData = useGetVaried(search);
   const { lastPrediction, currentData, changed } = variedData || {};
 
   useEffect(() => {
     if (variedData) {
-      setDifference(variedData.changed);
+      setDifference(changed);
     } else {
       setDifference(null);
     }
