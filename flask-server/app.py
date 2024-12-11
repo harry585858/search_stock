@@ -54,7 +54,8 @@ app.config['MAIL_DEFAULT_SENDER'] = 'swengineeringtest@gmail.com'  # 기본 발�
 mail = Mail(app)  # Mail 객체 초기화
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+db = SQLAlchemy()
+db.init_app(app)
 app.secret_key='비밀키'
 app.permanent_session_lifetime = timedelta(minutes=30)
 homeport = '3000'
