@@ -33,6 +33,7 @@ for time, frame in data.iterrows():
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"])
+CORS(app, origins=["http://127.0.0.1:3000"])
 #내부 데이터베이스 URI 설정 (현재 디렉토리에 example.db 파일 생성)
 # basedir = os.path.abspath(os.path.dirname(__file__))  # 현재 파일의 디렉토리 경로
 # app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(basedir, "example.db")}'
