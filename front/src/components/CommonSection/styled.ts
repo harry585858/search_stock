@@ -1,20 +1,21 @@
 import styled from "styled-components";
 
 export const Root = styled.div`
-  width: 95%;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   background-color: #ffffff;
-  margin-top: 100px;
+  margin-top: 72px;
 `;
 
 export const Container = styled.div`
-  width: 100%;
+  width: 95%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 0 3px #7a7a7a;
+
+  padding: 10px;
+  border: 1px solid black;
 `;

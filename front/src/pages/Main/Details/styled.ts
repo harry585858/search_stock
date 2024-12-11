@@ -4,7 +4,6 @@ export const Root = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-around;
-  overflow-y: auto;
 `;
 
 export const DataSection = styled.div`
@@ -14,9 +13,8 @@ export const DataSection = styled.div`
   justify-content: center;
   align-items: center;
   gap: 5px;
-  overflow-y: auto;
 
-  position: fixed;
+  position: absolute;
   left: 0px;
 `;
 

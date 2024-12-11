@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useState } from "react";
 import {
   LineChart,
   Line,
@@ -9,9 +9,13 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import axios from "axios";
 import { CommonSection } from "../../../components/CommonSection/CommonSection";
 import { Header } from "../../../components/Header";
+import {
+  usePredictData,
+  transformPredictData,
+} from "../../../components/usePredictData";
+import { useStockData } from "../../../components/useStockData";
 import {
   Root,
   Sidebar,
@@ -22,50 +26,10 @@ import {
   PredictButton,
   DataSection,
 } from "./styled";
-import { stockDataProps } from "../../../components/StockDataProps/StockDataProps";
 
 interface StockChartProps {
   ticker: string;
 }
-
-interface PredictDataStruct {
-  id: number;
-  stock_code: string;
-  [key: string]: number | string;
-}
-
-interface PredictChartProps {
-  평균평점: number | null;
-  즐겨찾기여부: boolean;
-  예측데이터: PredictDataStruct[];
-}
-
-const useStockData = (ticker: string) => {
-  const [dataDetails, setDataDetails] = useState<stockDataProps[]>([]);
-  const [listData, setListData] = useState<stockDataProps[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response_Detail = await axios.get<stockDataProps[]>(
-          `/api?ticker=${ticker}`
-        );
-        const response_Side = await axios.get<stockDataProps[]>("/api");
-        setDataDetails(response_Detail.data);
-        setListData(response_Side.data);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [ticker]);
-
-  return { dataDetails, listData, loading };
-};
 
 const StockChart: FC<StockChartProps> = ({ ticker }) => {
   const { dataDetails, loading } = useStockData(ticker);
@@ -125,56 +89,6 @@ const ShowStockData: FC<StockChartProps> = ({ ticker }) => {
   );
 };
 
-const usePredictData = (ticker: string) => {
-  const [predictDetails, setPredictDetails] =
-    useState<PredictChartProps | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchPredictData = async (interval: string) => {
-      try {
-        setLoading(true);
-        const response = await axios.post<PredictChartProps>(
-          `stockdetail/${interval}`,
-          {
-            stock_code: ticker,
-          },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setPredictDetails(response.data);
-        console.log(response.data);
-      } catch (err) {
-        setError("데이터 로딩 중 오류가 발생하였습니다.");
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPredictData("month");
-  }, [ticker]);
-
-  return { predictDetails, loading, error };
-};
-
-const transformPredictData = (data: PredictDataStruct[]) => {
-  // 모든 데이터를 키-값 형태로 변환
-  return data.flatMap((entry) =>
-    Object.entries(entry)
-      .filter(([key]) => key !== "id" && key !== "stock_code") // 필요 없는 키 필터링
-      .map(([key, value]) => ({
-        key, // x축 데이터
-        value: Number(value), // y축 데이터
-        id: entry.id, // 그룹화 및 구분용
-      }))
-  );
-};
-
 const PredictChart: FC<StockChartProps> = ({ ticker }) => {
   const { predictDetails, loading } = usePredictData(ticker);
 
@@ -201,7 +115,7 @@ const PredictChart: FC<StockChartProps> = ({ ticker }) => {
             type="monotone"
             dataKey="value"
             data={chartData.filter((d) => d.id === id)}
-            stroke={`#${Math.floor(Math.random() * 16777215).toString(16)}`} // 랜덤 색상
+            stroke="#3410d6"
             name={`Stock ${id}`}
           />
         ))}

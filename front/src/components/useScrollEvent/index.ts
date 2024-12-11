@@ -1,1 +1,0 @@
-export { useScrollEvent } from "./useScrollEvent";
