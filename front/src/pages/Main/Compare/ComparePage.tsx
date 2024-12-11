@@ -9,14 +9,9 @@ import {
   usePredictData,
 } from "../../../components/usePredictData";
 
-const useGetVaried = (ticker: string): number | null => {
+const UseGetVaried = (ticker: string): number | null => {
   const stockData = useStockData(ticker).dataDetails;
   const predictData = usePredictData(ticker).predictDetails;
-
-  useEffect(() => {
-    console.log("현재 데이터:", stockData);
-    console.log("예측 데이터:", predictData);
-  }, [stockData, predictData]);
 
   if (
     !ticker ||
@@ -36,11 +31,18 @@ const useGetVaried = (ticker: string): number | null => {
 };
 
 export const ComparePage = () => {
-  const [search, setSearch] = useState("");
-  const [difference, setDifference] = useState();
+  const [search, setSearch] = useState<string>("");
+  const [difference, setDifference] = useState<number | null>();
 
-  const handleSearch = () => {
-    setDifference(useGetVaried(search));
+  const variedDifference = UseGetVaried(search);
+
+  useEffect(() => {
+    setDifference(variedDifference);
+  }, [variedDifference]);
+
+  const handleSearch = (e: React.MouseEvent) => {
+    e.preventDefault();
+    console.log("Search triggered:", search);
   };
 
   return (
@@ -51,16 +53,20 @@ export const ComparePage = () => {
           <SearchSection
             type="text"
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => setSearch(event.target.value.toUpperCase())}
             placeholder="검색어 입력..."
           />
-          <SubmitIcon type="button" onClick={handleSearch}>
+          <SubmitIcon
+            type="button"
+            onClick={handleSearch}
+            disabled={search.length === 0}
+          >
             <img src={searchicon} width={"24px"} height={"24px"} />
           </SubmitIcon>
         </SearchBar>
 
         {difference !== null && (
-          <div>Predicted Change : {difference.toFixed(2)}</div>
+          <div>Predicted Change : {difference?.toFixed(2)}</div>
         )}
       </CommonSection>
     </Root>
