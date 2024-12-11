@@ -25,6 +25,7 @@ import {
   DataDetails,
   PredictButton,
   DataSection,
+  P,
 } from "./styled";
 
 interface StockChartProps {
@@ -37,7 +38,8 @@ const StockChart: FC<StockChartProps> = ({ ticker }) => {
   if (loading) return <CommonSection>Loading...</CommonSection>;
 
   return (
-    <ResponsiveContainer width={"100%"} height={550}>
+
+    <ResponsiveContainer width={"100%"} height={550}> 
       <LineChart
         data={dataDetails}
         margin={{ top: 150, right: 0, left: 0, bottom: 10 }}
@@ -195,8 +197,8 @@ export const DetailsPage: FC<StockChartProps> = ({ ticker }) => {
       <Sidebar>
         {sideDataCur.map((stock, index) => (
           <SideTab key={index}>
-            {stock.Name} ${stock.AdjClose?.toFixed(2)}{" "}
-            {stock.Volume?.toFixed(2)}
+            <P>{stock.Name} </P><P>${stock.AdjClose?.toFixed(2)}{" "}</P>
+            <P>{stock.Volume?.toFixed(2)}</P>
           </SideTab>
         ))}
       </Sidebar>
