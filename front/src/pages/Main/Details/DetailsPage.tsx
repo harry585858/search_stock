@@ -137,7 +137,7 @@ const ShowPredictData: FC<StockChartProps> = ({ ticker }) => {
       </DataTitle>
       <DataTitle>
         Favorite{" "}
-        <DataDetails>{predictDetails?.즐겨찾기여부 ? "Y" : "N"}</DataDetails>
+        <DataDetails>{predictDetails?.즐겨찾기여부 ? "⭐️" : "☆"}</DataDetails>
       </DataTitle>
       {predictDetails?.예측데이터.map((data) => (
         <DataTitle key={data.id}>
