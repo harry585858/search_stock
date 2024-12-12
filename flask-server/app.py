@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, make_response
 from flask_mail import Mail,Message
 import hashlib
 from flask_sqlalchemy import SQLAlchemy
@@ -6,7 +6,7 @@ from sqlalchemy import event, func, DECIMAL
 import os
 import requests
 from config import Config
-from datetime import timedelta
+from datetime import datetime, timedelta
 import random
 from flask_cors import CORS
 import yfinance as yf
@@ -58,7 +58,7 @@ db = SQLAlchemy(app)
 app.secret_key='비밀키'
 app.permanent_session_lifetime = timedelta(minutes=30)
 homeport = '3000'
-homeurl = 'http'+'://127.0.0.1:'+homeport
+homeurl = 'http'+'://localhost:'+homeport
 
 # 데이터베이스 모델 정의
 class User(db.Model):
@@ -394,10 +394,22 @@ def makelogin():
     user = User.query.filter_by(user_id=user_id, user_password=pw).first()
     
     if user:
+        resp = make_response(redirect(homeurl))
+        expires = datetime.utcnow() + timedelta(minutes=30)
+        resp.set_cookie(
+            "user_id",
+            value=user_id,
+            max_age=30*60,
+            httponly=True,
+            secure=False,
+            expires=expires,
+            domain="localhost"
+        )
         session['user_id'] = user_id
         session['logged_in'] = True
         #return render_template('makelogin.html', success=True)
-        return redirect(homeurl)
+        return resp
+        #return redirect(homeurl)
     else:
         return render_template('makelogin.html', success=False)
 
