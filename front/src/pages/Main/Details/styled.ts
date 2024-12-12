@@ -46,7 +46,6 @@ export const SideTab = styled.div`
 
   border-radius: 12px;
   border: 1px solid #3410d6;
-  background-color:FAFAFF;
 `;
 
 export const DataTab = styled.div`
@@ -76,27 +75,11 @@ export const DataDetails = styled.div`
 `;
 
 export const PredictButton = styled.button`
-font-family:arial;
   width: 350px;
   height: 40px;
-  font-size:1em;
+
   border-radius: 18px;
   border: 0px;
   background-color: #3410d6;
   color: #ffffff;
-  font-weight:bold;
-`;
-
-export const P = styled.p`
-  width:20%;
-  font-family:arial;
-  &:first-child{
-  text-align:left;
-  }
-  &:nth-child(2){
-  text-align:right;
-  }
-  &:last-child{
-  text-align:right;
-  }
 `;
