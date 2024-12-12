@@ -425,7 +425,7 @@ def mypage():
     favoriteList = FavoriteItem.query.filter_by(user_id=user_id).all()
     
     if favoriteList:
-        return jsonify({"message": "Item in favorites"}), 200
+        return jsonify({"message": favoriteList}), 200
     else:
         return jsonify({"message": "nothing"}), 200
 #####
