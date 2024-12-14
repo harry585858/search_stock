@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 import random
 from flask_cors import CORS
 import yfinance as yf
-from models import *
+#from models import *
 
 tickers_list = ['AAPL', 'INTC', 'AMZN', 'META', 'MSFT', 'NVDA', 'TSLA','LOGI','DIS']
 stock_name = ['Apple', 'Intel', 'Amazon', 'Meta', 'Microsoft', 'NVIDIA', 'Tesla','Logitech','Disney']
@@ -300,7 +300,11 @@ def signup_check():
         if existing_user:
             return jsonify({"error": "same_user"})
     return jsonify({"success": "0"})
-
+@app.route('/favorite')
+def favorite():
+    ticker = request.args.get('ticker')
+    existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
+    return jsonify({"favorite":existing_favorite}),200
 @app.route('/stockdetail/<string:interval>', methods=['POST'])
 def stockdetail(interval):
     request_data = request.get_json()
@@ -395,14 +399,12 @@ def makelogin():
     
     if user:
         resp = make_response(redirect(homeurl))
-        expires = datetime.utcnow() + timedelta(minutes=30)
         resp.set_cookie(
             "user_id",
             value=user_id,
             max_age=30*60,
             httponly=True,
             secure=False,
-            expires=expires,
             domain="localhost"
         )
         session['user_id'] = user_id
@@ -411,7 +413,7 @@ def makelogin():
         return resp
         #return redirect(homeurl)
     else:
-        return render_template('makelogin.html', success=False)
+        return jsonify({"message":"fail"})
 
 @app.route('/logout')
 def logout():
@@ -456,17 +458,11 @@ def makeid():
 def api():
     # 요청에서 ticker 파라미터 추출
     ticker = request.args.get('ticker')
-    #주석처리 문제 해결
-    if ticker == None:
-        return jsonify({"message": "ERROR"})
-    for char in ticker:
-        if not char.isalpha():
-            return jsonify({"message": "ERROR"})
     if ticker:  # 특정 티커에 대한 데이터 필터링
         filtered_data = [
             item for item in modified_Data if item['Ticker'] == ticker
         ]
-        return jsonify(filtered_data)
+        return jsonify(filtered_data), 200
     
     # 티커가 없으면 전체 데이터 반환
     return jsonify(modified_Data)
@@ -478,4 +474,4 @@ def predict():
     return jsonify(Predictstocks)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)  
+    app.run(debug=True, port=8000, host='0.0.0.0')  
