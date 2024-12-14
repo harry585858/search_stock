@@ -11,6 +11,7 @@ import random
 from flask_cors import CORS
 import yfinance as yf
 from models import *
+import re
 
 tickers_list = ['AAPL', 'INTC', 'AMZN', 'META', 'MSFT', 'NVDA', 'TSLA','LOGI','DIS']
 stock_name = ['Apple', 'Intel', 'Amazon', 'Meta', 'Microsoft', 'NVIDIA', 'Tesla','Logitech','Disney']
@@ -18,7 +19,7 @@ data = yf.download(tickers_list, period="1mo", interval="1d")
 modified_Data = []
 for time, frame in data.iterrows():
     for ticker in tickers_list:
-        modified_Data.append({
+        modified_Data.append({  
             "Datetime": time.strftime('%Y-%m-%d %H:%M'),
             "Ticker": ticker,
             "Name": stock_name[tickers_list.index(ticker)],
@@ -456,7 +457,12 @@ def makeid():
 def api():
     # 요청에서 ticker 파라미터 추출
     ticker = request.args.get('ticker')
-    
+    #주석처리 문제 해결
+    if ticker == None:
+        return jsonify({"message": "ERROR"})
+    for char in ticker:
+        if not char.isalpha():
+            return jsonify({"message": "ERROR"})
     if ticker:  # 특정 티커에 대한 데이터 필터링
         filtered_data = [
             item for item in modified_Data if item['Ticker'] == ticker
@@ -473,4 +479,4 @@ def predict():
     return jsonify(Predictstocks)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)
+    app.run(debug=True, port=8000)  
