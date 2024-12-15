@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, make_response
 from flask_mail import Mail,Message
 import hashlib
 from flask_sqlalchemy import SQLAlchemy
@@ -6,7 +6,7 @@ from sqlalchemy import event, func, DECIMAL
 import os
 import requests
 from config import Config
-from datetime import timedelta
+from datetime import datetime, timedelta
 import random
 from flask_cors import CORS
 import yfinance as yf
@@ -14,12 +14,12 @@ from models import *
 
 tickers_list = ['AAPL', 'INTC', 'AMZN', 'META', 'MSFT', 'NVDA', 'TSLA','LOGI','DIS']
 stock_name = ['Apple', 'Intel', 'Amazon', 'Meta', 'Microsoft', 'NVIDIA', 'Tesla','Logitech','Disney']
-data = yf.download(tickers_list, period="1mo", interval="1d")
+data = yf.download(tickers_list, period="1y", interval="1d")
 modified_Data = []
 for time, frame in data.iterrows():
     for ticker in tickers_list:
         modified_Data.append({
-            "Datetime": time.strftime('%Y-%m-%d %H:%M'),
+            "Datetime": time.strftime('%Y-%m-%d %H:%M'), #0123/4/56/7/89/10/1112/13/1415
             "Ticker": ticker,
             "Name": stock_name[tickers_list.index(ticker)],
             "Open": frame[('Open', ticker)],
@@ -58,7 +58,7 @@ db = SQLAlchemy(app)
 app.secret_key='비밀키'
 app.permanent_session_lifetime = timedelta(minutes=30)
 homeport = '3000'
-homeurl = 'http'+'://127.0.0.1:'+homeport
+homeurl = 'http'+'://localhost:'+homeport
 
 # 데이터베이스 모델 정의
 class User(db.Model):
@@ -301,18 +301,18 @@ def signup_check():
             return jsonify({"error": "same_user"})
     return jsonify({"success": "0"})
 
-@app.route('/stockdetail/<string:interval>', methods=['POST'])
+@app.route('/stockdetail/<interval>', methods=['POST'])
 def stockdetail(interval):
     request_data = request.get_json()
     stock_code = request_data.get("stock_code", None)
 
-    if not stock_code:
-        return jsonify ({"error": "Invalid ticker"}), 400
+    if not request_data or 'stock_code' not in request_data:
+        return jsonify({"error": "Invalid or missing stock_code"}), 400
 
     user_id = session.get('user_id')
     existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
     avg_rate = db.session.query(func.avg(rateItem.rating)).filter(rateItem.stock_code==stock_code).scalar()
-    
+
     if interval == "week":
         predict_data = [data.to_dict() for data in Oneweekpredict.query.filter_by(stock_code = stock_code).all()]
     elif interval == "month":
@@ -325,7 +325,7 @@ def stockdetail(interval):
     else:
         favorite_status = False
 
-    if avg_rate:
+    if predict_data:
         return jsonify({"평균평점": avg_rate, "즐겨찾기 여부": favorite_status, "예측데이터": predict_data})
     else:
         return jsonify({"error": "오류"}), 400
@@ -368,7 +368,12 @@ def stockdetail_rate(stock_code):
         return jsonify({"message": "저장 완료"})
     else:
         return jsonify({"message": "이미 존재"})
-        
+
+@app.route('/favorite')
+def favorite():
+    ticker = request.args.get('ticker')
+    existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
+    return jsonify({"favorite":existing_favorite}),200        
 
 @app.route('/stockdetail/ratedelete/<string:stock_code>', methods=['DELETE'])
 def stockdetail_ratedelete(stock_code):
@@ -394,10 +399,22 @@ def makelogin():
     user = User.query.filter_by(user_id=user_id, user_password=pw).first()
     
     if user:
+        resp = make_response(redirect(homeurl))
+        expires = datetime.utcnow() + timedelta(minutes=30)
+        resp.set_cookie(
+            "user_id",
+            value=user_id,
+            max_age=30*60,
+            httponly=True,
+            secure=False,
+            expires=expires,
+            domain="localhost"
+        )
         session['user_id'] = user_id
         session['logged_in'] = True
         #return render_template('makelogin.html', success=True)
-        return redirect(homeurl)
+        return resp
+        #return redirect(homeurl)
     else:
         return render_template('makelogin.html', success=False)
 
