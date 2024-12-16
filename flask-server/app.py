@@ -10,16 +10,15 @@ from datetime import datetime, timedelta
 import random
 from flask_cors import CORS
 import yfinance as yf
-#from models import *
 
 tickers_list = ['AAPL', 'INTC', 'AMZN', 'META', 'MSFT', 'NVDA', 'TSLA','LOGI','DIS']
 stock_name = ['Apple', 'Intel', 'Amazon', 'Meta', 'Microsoft', 'NVIDIA', 'Tesla','Logitech','Disney']
-data = yf.download(tickers_list, period="1mo", interval="1d")
+data = yf.download(tickers_list, period="1y", interval="1d")
 modified_Data = []
 for time, frame in data.iterrows():
     for ticker in tickers_list:
-        modified_Data.append({  
-            "Datetime": time.strftime('%Y-%m-%d %H:%M'),
+        modified_Data.append({
+            "Datetime": time.strftime('%Y-%m-%d %H:%M'), #0123/4/56/7/89/10/1112/13/1415
             "Ticker": ticker,
             "Name": stock_name[tickers_list.index(ticker)],
             "Open": frame[('Open', ticker)],
@@ -260,11 +259,6 @@ def naver_callback():
     else:
         return jsonify({"error": "Failed to retrieve user info"}), 400
 
-@app.route('/search', methods=['POST'])
-def search():
-    nameOfStock = request.form.getlist('nameOfStock[]')
-    return render_template('search.html', nameOfStock=nameOfStock)
-
 @app.route('/makeresult', methods=['POST'])
 def makeresult():
     salt = 'HZaNK0en1n'
@@ -273,7 +267,7 @@ def makeresult():
     email = request.form['email']
     
     if not id or not pw or not email:
-        return redirect(homeurl)
+        return render_template('makeresult.html', result=False, error=1)
     
     pw = hashlib.sha512((pw + salt).encode()).hexdigest()
     existing_user = User.query.filter_by(user_id=id).first()
@@ -300,23 +294,19 @@ def signup_check():
         if existing_user:
             return jsonify({"error": "same_user"})
     return jsonify({"success": "0"})
-@app.route('/favorite')
-def favorite():
-    ticker = request.args.get('ticker')
-    existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
-    return jsonify({"favorite":existing_favorite}),200
-@app.route('/stockdetail/<string:interval>', methods=['POST'])
+
+@app.route('/stockdetail/<interval>', methods=['POST'])
 def stockdetail(interval):
     request_data = request.get_json()
     stock_code = request_data.get("stock_code", None)
 
-    if not stock_code:
-        return jsonify ({"error": "Invalid ticker"}), 400
+    if not request_data or 'stock_code' not in request_data:
+        return jsonify({"error": "Invalid or missing stock_code"}), 400
 
     user_id = session.get('user_id')
     existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
     avg_rate = db.session.query(func.avg(rateItem.rating)).filter(rateItem.stock_code==stock_code).scalar()
-    
+
     if interval == "week":
         predict_data = [data.to_dict() for data in Oneweekpredict.query.filter_by(stock_code = stock_code).all()]
     elif interval == "month":
@@ -329,7 +319,7 @@ def stockdetail(interval):
     else:
         favorite_status = False
 
-    if avg_rate:
+    if predict_data:
         return jsonify({"평균평점": avg_rate, "즐겨찾기 여부": favorite_status, "예측데이터": predict_data})
     else:
         return jsonify({"error": "오류"}), 400
@@ -372,7 +362,12 @@ def stockdetail_rate(stock_code):
         return jsonify({"message": "저장 완료"})
     else:
         return jsonify({"message": "이미 존재"})
-        
+
+@app.route('/favorite')
+def favorite():
+    ticker = request.args.get('ticker')
+    existing_favorite = FavoriteItem.query.filter_by(user_id=user_id, stock_code=stock_code).first()
+    return jsonify({"favorite":existing_favorite}),200        
 
 @app.route('/stockdetail/ratedelete/<string:stock_code>', methods=['DELETE'])
 def stockdetail_ratedelete(stock_code):
@@ -399,12 +394,14 @@ def makelogin():
     
     if user:
         resp = make_response(redirect(homeurl))
+        expires = datetime.utcnow() + timedelta(minutes=30)
         resp.set_cookie(
             "user_id",
             value=user_id,
             max_age=30*60,
             httponly=True,
             secure=False,
+            expires=expires,
             domain="localhost"
         )
         session['user_id'] = user_id
@@ -413,7 +410,7 @@ def makelogin():
         return resp
         #return redirect(homeurl)
     else:
-        return jsonify({"message":"fail"})
+        return redirect(homeurl)
 
 @app.route('/logout')
 def logout():
@@ -427,42 +424,47 @@ def mypage():
     favoriteList = FavoriteItem.query.filter_by(user_id=user_id).all()
     
     if favoriteList:
-        return jsonify({"message": favoriteList}), 200
+        return jsonify({"message": "Item in favorites"}), 200
     else:
         return jsonify({"message": "nothing"}), 200
 #####
+#@app.route('/search', methods=['POST'])
+#def search():
+#    nameOfStock = request.form.getlist('nameOfStock[]')
+#    return render_template('search.html', nameOfStock=nameOfStock)
 
-@app.route('/')
-def index():
-    if 'logged_in' in session and session['logged_in']:
-        user_id = session.get('user_id')
-        user = User.query.get(user_id)
-        favorites = user.favorites
-        post = rateItem.query.filter_by(user_id = user_id).all()
-        session.permanent = True
-        
-        return render_template('index.html', logined = True, favorites=favorites, post=post)
+#@app.route('/')
+#def index():
+#    if 'logged_in' in session and session['logged_in']:
+#        user_id = session.get('user_id')
+#        user = User.query.get(user_id)
+#        favorites = user.favorites
+#        post = rateItem.query.filter_by(user_id = user_id).all()
+#        session.permanent = True
+#        
+#        return render_template('index.html', logined = True, favorites=favorites, post=post)
+#
+#    else:
+#        return render_template('index.html', logined = False)
 
-    else:
-        return render_template('index.html', logined = False)
+#@app.route('/login')
+#def login():
+#    return render_template('login.html')
 
-@app.route('/login')
-def login():
-    return render_template('login.html')
-
-@app.route('/makeid')
-def makeid():
-    return render_template('makeid.html')   
+#@app.route('/makeid')
+#def makeid():
+#    return render_template('makeid.html')   
 
 @app.route('/api', methods=['GET'])
 def api():
     # 요청에서 ticker 파라미터 추출
     ticker = request.args.get('ticker')
+    
     if ticker:  # 특정 티커에 대한 데이터 필터링
         filtered_data = [
             item for item in modified_Data if item['Ticker'] == ticker
         ]
-        return jsonify(filtered_data), 200
+        return jsonify(filtered_data)
     
     # 티커가 없으면 전체 데이터 반환
     return jsonify(modified_Data)
@@ -474,4 +476,4 @@ def predict():
     return jsonify(Predictstocks)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000, host='0.0.0.0')  
+    app.run(debug=True, port=8000)
