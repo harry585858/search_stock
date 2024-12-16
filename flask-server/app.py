@@ -260,11 +260,6 @@ def naver_callback():
     else:
         return jsonify({"error": "Failed to retrieve user info"}), 400
 
-@app.route('/search', methods=['POST'])
-def search():
-    nameOfStock = request.form.getlist('nameOfStock[]')
-    return render_template('search.html', nameOfStock=nameOfStock)
-
 @app.route('/makeresult', methods=['POST'])
 def makeresult():
     salt = 'HZaNK0en1n'
@@ -434,6 +429,10 @@ def mypage():
     else:
         return jsonify({"message": "nothing"}), 200
 #####
+#@app.route('/search', methods=['POST'])
+#def search():
+#    nameOfStock = request.form.getlist('nameOfStock[]')
+#    return render_template('search.html', nameOfStock=nameOfStock)
 
 #@app.route('/')
 #def index():
