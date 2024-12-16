@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 import random
 from flask_cors import CORS
 import yfinance as yf
-from models import *
 
 tickers_list = ['AAPL', 'INTC', 'AMZN', 'META', 'MSFT', 'NVDA', 'TSLA','LOGI','DIS']
 stock_name = ['Apple', 'Intel', 'Amazon', 'Meta', 'Microsoft', 'NVIDIA', 'Tesla','Logitech','Disney']
