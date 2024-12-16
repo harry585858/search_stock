@@ -452,9 +452,9 @@ def mypage():
 #def login():
 #    return render_template('login.html')
 
-@app.route('/makeid')
-def makeid():
-    return render_template('makeid.html')   
+#@app.route('/makeid')
+#def makeid():
+#    return render_template('makeid.html')   
 
 @app.route('/api', methods=['GET'])
 def api():
