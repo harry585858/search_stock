@@ -70,6 +70,15 @@ export const ComparePage = () => {
       change: variedData?.changed ?? 0,
     };
 
+    if (
+      newList.predict === 0 &&
+      newList.current === 0 &&
+      newList.change === 0
+    ) {
+      alert("유효하지 않은 검색어입니다.");
+      return;
+    }
+
     setList((prev) => [...prev, newList]);
     setListnum((list) => list + 1);
     setSearch("");
