@@ -98,6 +98,8 @@ export const Favorite = styled.button`
 
 export const Sidebar = styled.div`
   width: 30%;
+  min-width: 300px;
+  max-width: 400px;
   height: 480px;
   display: flex;
   flex-direction: column;
@@ -117,14 +119,18 @@ export const Sidebar = styled.div`
 
 export const SideTab = styled.div`
   width: 90%;
+
   height: 36px;
   display: flex;
   justify-content: space-around;
   align-items: center;
+  gap: 5px;
 
   border-radius: 12px;
   border: 1px solid #3410d6;
 `;
+
+export const SideItem = styled.span``;
 
 export const DataTab = styled.div`
   width: 90%;

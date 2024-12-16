@@ -39,7 +39,9 @@ import {
   DataInterval,
   SelectInterval,
   Favorite,
+  SideItem,
 } from "./styled";
+import { useLocation } from "react-router-dom";
 
 interface StockTickerProps {
   ticker: string;
@@ -234,32 +236,9 @@ const ShowPredictHeader: FC<StockTickerProps> = ({ ticker }) => {
   );
 };
 
-const ShowPredictData: FC<StockTickerProps> = ({ ticker }) => {
-  const { predictDetails, loading, error } = usePredictData(ticker);
-
-  if (loading) return <CommonSection>Loading...</CommonSection>;
-  if (error) return <CommonSection>{error}</CommonSection>;
-
-  return (
-    <DataTab id="PredictTab">
-      {predictDetails?.예측데이터.map((data) => (
-        <DataTitle key={data.id}>
-          <DataDetails>
-            {Object.entries(data)
-              .filter(([key]) => key !== "id" && key !== "stock_code")
-              .map(([key, value]) => (
-                <span key={key}>
-                  {key}: {value}{" "}
-                </span>
-              ))}
-          </DataDetails>
-        </DataTitle>
-      ))}
-    </DataTab>
-  );
-};
-
-export const DetailsPage: FC<StockTickerProps> = ({ ticker }) => {
+export const DetailsPage: FC = () => {
+  const location = useLocation();
+  const { ticker } = location.state || { ticker: "Unknown" };
   const [isPredict, setPredict] = useState(false);
   const [showButton, setShowButton] = useState(true);
   const sideData = useStockData("").listData;
@@ -299,7 +278,9 @@ export const DetailsPage: FC<StockTickerProps> = ({ ticker }) => {
       <Sidebar>
         {sideDataCur.map((stock, index) => (
           <SideTab key={index}>
-            {stock.Name} ${stock.AdjClose?.toFixed(2)} {stock.Volume}
+            <SideItem>{stock.Name}</SideItem>
+            <SideItem>${stock.AdjClose?.toFixed(2)}</SideItem>
+            <SideItem>{stock.Volume}</SideItem>
           </SideTab>
         ))}
       </Sidebar>

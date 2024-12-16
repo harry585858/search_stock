@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const Root = styled.div`
@@ -18,8 +19,19 @@ export const MainSection = styled.div`
   box-shadow: 0 0 5px #aaaaaa;
 `;
 
+export const StyledLink = styled(Link)`
+  width: 100%;
+  text-decoration: none;
+  color: #100447;
+
+  &:visited {
+    text-decoration: none;
+    color: #100447;
+  }
+`;
+
 export const StockList = styled.div`
-  width: 80%;
+  width: 100%;
   height: 36px;
   display: flex;
   justify-content: space-around;

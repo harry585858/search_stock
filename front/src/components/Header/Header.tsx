@@ -14,7 +14,9 @@ export const Header: FC<HeaderProps> = ({ showLogo }) => {
         <StyledLink to="/">
           {showLogo && <h1 className="logo">STOCK AI</h1>}
         </StyledLink>
-        <StyledLink to="/Stock/Details">Details</StyledLink>
+        <StyledLink to="/Stock/Details" state={{ ticker: "AAPL" }}>
+          Details
+        </StyledLink>
         <StyledLink to="/Stock/Compare">Compare</StyledLink>
       </HeaderSectionLeft>
 

@@ -1,9 +1,18 @@
 import React, { FC } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { CommonSection } from "../../components/CommonSection/CommonSection";
 import { Header } from "../../components/Header";
 import { useStockData } from "../../components/useStockData";
-import { MainSection, Root, StockList, P, H3, DIV1 } from "./styled";
+import {
+  MainSection,
+  Root,
+  StockList,
+  P,
+  H3,
+  DIV1,
+  StyledLink,
+} from "./styled";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000";
 
@@ -33,10 +42,16 @@ export const MainPage: FC = () => {
             <H3>24H 거래량</H3>
           </DIV1>
           {summary.map((stock, index) => (
-            <StockList key={index}>
-              <P>{stock.Name}</P> <P>${stock.AdjClose?.toFixed(2)}</P>{" "}
-              <P>{stock.Volume}</P>
-            </StockList>
+            <StyledLink
+              key={index}
+              to={"/stock/details"}
+              state={{ ticker: stock.Ticker }}
+            >
+              <StockList>
+                <P>{stock.Name}</P> <P>${stock.AdjClose?.toFixed(2)}</P>{" "}
+                <P>{stock.Volume}</P>
+              </StockList>
+            </StyledLink>
           ))}
         </MainSection>
       </CommonSection>
