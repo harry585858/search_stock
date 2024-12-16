@@ -163,9 +163,9 @@ const ShowStockData: FC<StockTickerProps> = ({ ticker }) => {
   );
 };
 
-const EditFavorite: FC<StockTickerProps> = ({ ticker }) => {
+/*const EditFavorite: FC<StockTickerProps> = ({ ticker }) => {
   return null;
-};
+};*/
 
 const PredictChart: FC<StockTickerProps> = ({ ticker }) => {
   const { predictDetails, loading } = usePredictData(ticker);
