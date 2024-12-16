@@ -6,16 +6,18 @@ export const Root = styled.div`
 `;
 export const Sign = styled.div`
   width: 100%;
-  input{
-  width:50%;
-  height:3em;
-  border:none;
-  border-radius:20px;
-  box-shadow: 5px 5px 20px grey;
+
+  input {
+    width: 50%;
+    height: 3em;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 5px 5px 20px grey;
   }
-  input[type="submit"]{
-  background-color: #3410d6;
-  color:white;
-  font-size:1em;
+
+  input[type="submit"] {
+    background-color: #3410d6;
+    color: white;
+    font-size: 1em;
   }
 `;

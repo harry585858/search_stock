@@ -44,7 +44,7 @@ export const usePredictData = (ticker: string) => {
       }
     };
 
-    fetchPredictData("month");
+    fetchPredictData("week");
   }, [ticker]);
 
   return { predictDetails, loading, error };

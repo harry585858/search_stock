@@ -4,6 +4,7 @@ export const Root = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+  font-family: NotoSansTTF;
 `;
 
 export const MainSection = styled.div`
@@ -31,7 +32,6 @@ export const StockList = styled.div`
   background-color: #fafaff;
 `;
 export const P = styled.p`
-  font-family: arial;
   &:first-child {
     width: 30%;
     text-align: left;

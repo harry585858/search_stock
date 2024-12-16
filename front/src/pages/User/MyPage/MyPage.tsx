@@ -10,7 +10,6 @@ export const MyPage = () => {
       <h1>아이디</h1>
       <RIGHT>
         <h1>즐겨찾기한 목록</h1>
-
       </RIGHT>
     </Root>
   );
