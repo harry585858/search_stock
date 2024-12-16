@@ -1,0 +1,1 @@
+export { useStockData } from "./useStockData";

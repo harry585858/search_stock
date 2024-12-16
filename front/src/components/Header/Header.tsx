@@ -32,6 +32,8 @@ export const Header: FC<HeaderProps> = ({ showLogo }) => {
 
 const Root = styled.header`
   width: 95%;
+  min-width: 90%;
+  height: 42px;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
