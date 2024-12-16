@@ -41,7 +41,8 @@ import {
   Favorite,
   SideItem,
 } from "./styled";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { StyledLink } from "../styled";
 
 interface StockTickerProps {
   ticker: string;
@@ -165,10 +166,6 @@ const ShowStockData: FC<StockTickerProps> = ({ ticker }) => {
   );
 };
 
-/*const EditFavorite: FC<StockTickerProps> = ({ ticker }) => {
-  return null;
-};*/
-
 const PredictChart: FC<StockTickerProps> = ({ ticker }) => {
   const { predictDetails, loading } = usePredictData(ticker);
 
@@ -277,11 +274,17 @@ export const DetailsPage: FC = () => {
 
       <Sidebar>
         {sideDataCur.map((stock, index) => (
-          <SideTab key={index}>
-            <SideItem>{stock.Name}</SideItem>
-            <SideItem>${stock.AdjClose?.toFixed(2)}</SideItem>
-            <SideItem>{stock.Volume}</SideItem>
-          </SideTab>
+          <StyledLink
+            key={index}
+            to={"/stock/details"}
+            state={{ ticker: stock.Ticker }}
+          >
+            <SideTab>
+              <SideItem>{stock.Name}</SideItem>
+              <SideItem>${stock.AdjClose?.toFixed(2)}</SideItem>
+              <SideItem>{stock.Volume}</SideItem>
+            </SideTab>
+          </StyledLink>
         ))}
       </Sidebar>
     </Root>

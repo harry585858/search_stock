@@ -20,7 +20,7 @@ export const MainSection = styled.div`
 `;
 
 export const StyledLink = styled(Link)`
-  width: 100%;
+  width: 90%;
   text-decoration: none;
   color: #100447;
 

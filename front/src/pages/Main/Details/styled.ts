@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const Root = styled.div`
@@ -118,7 +119,7 @@ export const Sidebar = styled.div`
 `;
 
 export const SideTab = styled.div`
-  width: 90%;
+  width: 100%;
 
   height: 36px;
   display: flex;
@@ -178,4 +179,15 @@ export const PredictButton = styled.button`
   font-family: OpenSansTTF;
   font-weight: bold;
   font-size: 16px;
+`;
+
+export const StyledLink = styled(Link)`
+  width: 90%;
+  text-decoration: none;
+  color: #100447;
+
+  &:visited {
+    text-decoration: none;
+    color: #100447;
+  }
 `;
