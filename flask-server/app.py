@@ -273,7 +273,7 @@ def makeresult():
     email = request.form['email']
     
     if not id or not pw or not email:
-        return render_template('makeresult.html', result=False, error=1)
+        return redirect(homeurl)
     
     pw = hashlib.sha512((pw + salt).encode()).hexdigest()
     existing_user = User.query.filter_by(user_id=id).first()
